@@ -15,7 +15,7 @@ function Onboarding({ open, onDone, pyStatus = {}, pySetup, refreshPyStatus, run
     let mounted = true;
     (async () => {
       try {
-        const h = await window.inferml?.hw.get();
+        const h = await window.zeroinfer?.hw.get();
         if (mounted && h && !h.error) setHw(h);
       } catch {}
     })();
@@ -263,7 +263,7 @@ function HFTokenCard() {
   const [status, setStatus] = useStateOB(null); 
 
   const refresh = async () => {
-    try { setMasked(await window.inferml?.hf.getToken()); } catch {}
+    try { setMasked(await window.zeroinfer?.hf.getToken()); } catch {}
   };
   useEffectOB(() => { refresh(); }, []);
 
@@ -273,9 +273,9 @@ function HFTokenCard() {
     setBusy(true);
     setStatus(null);
     try {
-      const v = await window.inferml?.hf.verifyToken(token);
+      const v = await window.zeroinfer?.hf.verifyToken(token);
       if (!v?.ok) { setStatus({ ok: false, error: v?.error || 'verification failed' }); setBusy(false); return; }
-      await window.inferml?.hf.setToken(token);
+      await window.zeroinfer?.hf.setToken(token);
       setStatus({ ok: true, user: v.user });
       setInput('');
       await refresh();
@@ -288,7 +288,7 @@ function HFTokenCard() {
   const clear = async () => {
     setBusy(true);
     try {
-      await window.inferml?.hf.clearToken();
+      await window.zeroinfer?.hf.clearToken();
       setMasked(null);
       setStatus(null);
     } catch {}
@@ -307,7 +307,7 @@ function HFTokenCard() {
               : 'Optional. Required to download gated models (Llama, Gemma, some Qwen/DeepSeek).'}
           </div>
         </div>
-        <a className="hub-link" onClick={() => window.inferml?.app.openExternal('https://huggingface.co/settings/tokens')}>
+        <a className="hub-link" onClick={() => window.zeroinfer?.app.openExternal('https://huggingface.co/settings/tokens')}>
           Get a token
         </a>
       </div>

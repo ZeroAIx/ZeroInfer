@@ -1,16 +1,16 @@
-"""MCP server exposing InferML's local models to Claude and other LLM clients.
+"""MCP server exposing ZeroInfer's local models to Claude and other LLM clients.
 
-Wraps InferML's local HTTP API (see client.py for why this is a client, not an
+Wraps ZeroInfer's local HTTP API (see client.py for why this is a client, not an
 engine embed) as MCP tools: detection, segmentation, transcription, speech,
 image generation, text generation, embeddings, plus model discovery/install.
 
-Requires the InferML desktop app to be running with its API switched on:
+Requires the ZeroInfer desktop app to be running with its API switched on:
 Settings -> API & MCP -> enable the local API server. The API is off by default -
-it is the one thing InferML deliberately exposes, so it is opt-in - and with it
+it is the one thing ZeroInfer deliberately exposes, so it is opt-in - and with it
 off there is nothing on port 11500 for these tools to talk to.
 
 Registering with Claude Code: the app writes a launcher and shows the exact
-`claude mcp add inferml -- ...` command on that same Settings page. Both paths in
+`claude mcp add zeroinfer -- ...` command on that same Settings page. Both paths in
 it are stable across app updates, which is the point of the generated launcher.
 
 Conventions:
@@ -33,13 +33,13 @@ from typing import Any
 
 from mcp.server.fastmcp import FastMCP, Image
 
-from mcp_server.client import DEFAULT_URL, InferMLClient, InferMLError
+from mcp_server.client import DEFAULT_URL, ZeroInferClient, ZeroInferError
 
-INSTRUCTIONS = """Runs Hugging Face models locally through InferML.
+INSTRUCTIONS = """Runs Hugging Face models locally through ZeroInfer.
 
-Requires the InferML desktop app to be running with its local API enabled
+Requires the ZeroInfer desktop app to be running with its local API enabled
 (Settings -> API & MCP). The API is off by default, so this is the first thing
-to check. Call `inferml_status` if a tool fails - it reports whether the API is
+to check. Call `zeroinfer_status` if a tool fails - it reports whether the API is
 reachable and which inference stack is installed.
 
 Models are Hugging Face repo ids (e.g. "hustvl/yolos-tiny"). Most tools have a
@@ -48,10 +48,10 @@ gigabytes - pass an explicit `model`. Use `search_models` to find candidates
 and `download_model` to fetch one ahead of time.
 """
 
-mcp = FastMCP("inferml", instructions=INSTRUCTIONS)
+mcp = FastMCP("zeroinfer", instructions=INSTRUCTIONS)
 
-_client = InferMLClient()
-_output_dir = Path.home() / "inferml-outputs"
+_client = ZeroInferClient()
+_output_dir = Path.home() / "zeroinfer-outputs"
 
 
 def _out_path(name: str, explicit: str | None) -> Path:
@@ -67,11 +67,11 @@ def _read_media(path: str, expect: str) -> tuple[bytes, str]:
     """Load a local image/audio file. Returns (bytes, mime)."""
     p = Path(path).expanduser()
     if not p.is_file():
-        raise InferMLError(f"No such file: {p}")
+        raise ZeroInferError(f"No such file: {p}")
     mime, _ = mimetypes.guess_type(str(p))
     mime = mime or ("image/png" if expect == "image" else "audio/wav")
     if not mime.startswith(expect):
-        raise InferMLError(f"{p.name} looks like {mime}, expected {expect}/*.")
+        raise ZeroInferError(f"{p.name} looks like {mime}, expected {expect}/*.")
     return p.read_bytes(), mime
 
 
@@ -102,8 +102,8 @@ def _wav_duration(raw: bytes) -> float | None:
 # --- discovery ---------------------------------------------------------------
 
 @mcp.tool()
-async def inferml_status() -> dict:
-    """Check that the InferML server is reachable and ready to run models.
+async def zeroinfer_status() -> dict:
+    """Check that the ZeroInfer server is reachable and ready to run models.
 
     Reports the inference stack's readiness, any missing packages, the active
     accelerator (cpu/gpu), and which models are currently loaded in memory.
@@ -125,7 +125,7 @@ async def inferml_status() -> dict:
 
 @mcp.tool()
 async def list_models() -> dict:
-    """List the models InferML can serve right now.
+    """List the models ZeroInfer can serve right now.
 
     `loaded` are resident in memory (fastest); `available` also includes models
     downloaded to the local Hugging Face cache.
@@ -146,9 +146,9 @@ async def list_models() -> dict:
 
 @mcp.tool()
 async def search_models(query: str = "", task: str = "", limit: int = 10) -> list[dict]:
-    """Search Hugging Face for models InferML can actually run.
+    """Search Hugging Face for models ZeroInfer can actually run.
 
-    Results are pre-filtered to architectures InferML supports, so anything
+    Results are pre-filtered to architectures ZeroInfer supports, so anything
     returned here will load (unsupported runtimes like GGUF/Ultralytics are
     excluded). Narrow with `task`, e.g. "object-detection",
     "image-segmentation", "automatic-speech-recognition", "text-to-speech",
@@ -296,7 +296,7 @@ async def generate_image(prompt: str, model: str, size: str = "",
 
     `size` is "WIDTHxHEIGHT" (e.g. "512x512"); omit it to use the model's
     native resolution. `ensure_downloaded` pre-fetches the weights through
-    InferML's own downloader, which is required on Windows: diffusers builds
+    ZeroInfer's own downloader, which is required on Windows: diffusers builds
     its download patterns with os.path.join, so loading an uncached pipeline
     there silently skips every component config.json and fails.
     """
@@ -363,7 +363,7 @@ async def text_to_speech(text: str, voice: str = "", model: str = "",
         payload["model"] = model
     raw = await _client.post("/v1/audio/speech", payload)
     if not isinstance(raw, (bytes, bytearray)):
-        raise InferMLError(f"Expected WAV bytes, got {type(raw).__name__}")
+        raise ZeroInferError(f"Expected WAV bytes, got {type(raw).__name__}")
     stem = "".join(ch if ch.isalnum() else "-" for ch in text.lower())[:40].strip("-")
     dest = _out_path(f"{stem or 'speech'}.wav", output_path)
     dest.write_bytes(raw)
@@ -377,7 +377,7 @@ async def text_to_speech(text: str, voice: str = "", model: str = "",
 async def generate_text(prompt: str, model: str = "", system: str = "",
                         max_tokens: int = 512,
                         temperature: float | None = None) -> dict:
-    """Run a prompt through a local LLM loaded in InferML.
+    """Run a prompt through a local LLM loaded in ZeroInfer.
 
     With no `model`, uses whichever LLM is currently loaded. Useful for running
     a small on-device model, comparing its output against your own, or keeping
@@ -410,7 +410,7 @@ async def embed_text(texts: list[str], model: str = "") -> dict:
     vectors are usually for.
     """
     if not texts:
-        raise InferMLError("`texts` must contain at least one string.")
+        raise ZeroInferError("`texts` must contain at least one string.")
     payload: dict[str, Any] = {"input": texts}
     if model:
         payload["model"] = model
@@ -434,17 +434,17 @@ async def embed_text(texts: list[str], model: str = "") -> dict:
 def main() -> None:
     global _client, _output_dir
     p = argparse.ArgumentParser(
-        prog="inferml-mcp",
-        description="Expose a running InferML server to LLM clients over MCP (stdio).",
+        prog="zeroinfer-mcp",
+        description="Expose a running ZeroInfer server to LLM clients over MCP (stdio).",
     )
-    p.add_argument("--url", default=os.environ.get("INFERML_URL", DEFAULT_URL),
-                   help=f"InferML server base URL (default {DEFAULT_URL}).")
+    p.add_argument("--url", default=os.environ.get("ZEROINFER_URL", DEFAULT_URL),
+                   help=f"ZeroInfer server base URL (default {DEFAULT_URL}).")
     p.add_argument("--output-dir",
-                   default=os.environ.get("INFERML_MCP_OUTPUT_DIR", str(_output_dir)),
+                   default=os.environ.get("ZEROINFER_MCP_OUTPUT_DIR", str(_output_dir)),
                    help="Where generated images and audio are written.")
     args = p.parse_args()
 
-    _client = InferMLClient(args.url)
+    _client = ZeroInferClient(args.url)
     _output_dir = Path(args.output_dir).expanduser()
     mcp.run(transport="stdio")
 

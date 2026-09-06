@@ -1,13 +1,13 @@
 /**
  * Preload bridge - the renderer's only door out.
  *
- * `window.inferml` is defined here, and this is the whole of it. The renderer
+ * `window.zeroinfer` is defined here, and this is the whole of it. The renderer
  * runs with contextIsolation on and no node integration, loaded from file://,
  * so it has no fetch to a server, no require, no child_process: if a capability
  * isn't on this object, the UI does not have it.
  *
- * This file used to be almost empty. When InferML was a web app the server
- * served `web-bridge.js`, which built `window.inferml` out of fetch() calls to
+ * This file used to be almost empty. When ZeroInfer was a web app the server
+ * served `web-bridge.js`, which built `window.zeroinfer` out of fetch() calls to
  * localhost, and the preload only added the few things HTTP couldn't do. The
  * server is gone, that shim is gone, and this is what the UI was always meant to
  * talk to - so the shape below is deliberately identical to what web-bridge.js
@@ -24,7 +24,7 @@ const on = (channel) => (cb) => {
 };
 
 /** Invoke an engine op. */
-const call = (type, payload) => ipcRenderer.invoke('inferml:call', type, payload || {});
+const call = (type, payload) => ipcRenderer.invoke('zeroinfer:call', type, payload || {});
 
 // --- broadcasts --------------------------------------------------------------
 // The engine pushes these unprompted (hardware ticks, store changes). One IPC
@@ -35,7 +35,7 @@ const subs = {
   'chats:updated': new Set(),
   'hf:installsChanged': new Set(),
 };
-ipcRenderer.on('inferml:event', (_e, { name, data }) => {
+ipcRenderer.on('zeroinfer:event', (_e, { name, data }) => {
   const set = subs[name];
   if (!set) return;
   for (const cb of set) { try { cb(data); } catch { /* one bad subscriber shouldn't break the rest */ } }
@@ -53,7 +53,7 @@ const onEvent = (name) => (cb) => {
 // removing the runtime is the one operation where that is exactly the wrong
 // conclusion to draw.
 const progress = { download: new Set(), setup: new Set(), runtime: new Set() };
-ipcRenderer.on('inferml:progress', (_e, { kind, data }) => {
+ipcRenderer.on('zeroinfer:progress', (_e, { kind, data }) => {
   for (const cb of progress[kind] || []) { try { cb(data); } catch { /* ditto */ } }
 });
 const onProgress = (kind) => (cb) => {
@@ -61,7 +61,7 @@ const onProgress = (kind) => (cb) => {
   return () => progress[kind].delete(cb);
 };
 
-contextBridge.exposeInMainWorld('inferml', {
+contextBridge.exposeInMainWorld('zeroinfer', {
   tasks: {
     run: (payload) => call('tasks.run', payload),
     stop: () => call('tasks.stop'),
@@ -70,10 +70,10 @@ contextBridge.exposeInMainWorld('inferml', {
     // Synchronous: the first render needs to know whether the runtime is
     // installed before any promise can resolve. Reads a cache in the main
     // process, not the engine.
-    statusSync: () => ipcRenderer.sendSync('inferml:statusSync'),
+    statusSync: () => ipcRenderer.sendSync('zeroinfer:statusSync'),
 
-    setup: (opts) => ipcRenderer.invoke('inferml:setup', opts || {}),
-    download: (modelId) => ipcRenderer.invoke('inferml:download', modelId),
+    setup: (opts) => ipcRenderer.invoke('zeroinfer:setup', opts || {}),
+    download: (modelId) => ipcRenderer.invoke('zeroinfer:download', modelId),
     cancelDownload: (modelId) => call('tasks.cancelDownload', { modelId }),
 
     onDownloadProgress: onProgress('download'),
@@ -115,8 +115,8 @@ contextBridge.exposeInMainWorld('inferml', {
   },
 
   dialog: {
-    openImage: () => ipcRenderer.invoke('inferml:pickImage'),
-    openAudio: () => ipcRenderer.invoke('inferml:pickAudio'),
+    openImage: () => ipcRenderer.invoke('zeroinfer:pickImage'),
+    openAudio: () => ipcRenderer.invoke('zeroinfer:pickAudio'),
   },
 
   // The optional local HTTP API (OpenAI-compatible /v1). Off unless the user
@@ -125,21 +125,21 @@ contextBridge.exposeInMainWorld('inferml', {
     status: () => call('api.status'),
     start: (port) => call('api.start', { port }),
     stop: () => call('api.stop'),
-    // Ready-to-paste `claude mcp add inferml -- ...` for this exact install.
-    mcpCommand: () => ipcRenderer.invoke('inferml:mcpCommand'),
+    // Ready-to-paste `claude mcp add zeroinfer -- ...` for this exact install.
+    mcpCommand: () => ipcRenderer.invoke('zeroinfer:mcpCommand'),
   },
 
   app: {
-    version: () => ipcRenderer.invoke('inferml:app.version'),
-    openExternal: (url) => ipcRenderer.invoke('inferml:openExternal', url),
+    version: () => ipcRenderer.invoke('zeroinfer:app.version'),
+    openExternal: (url) => ipcRenderer.invoke('zeroinfer:openExternal', url),
   },
 
   // "Logs" is a button in Settings that reveals the app's data folder. There is
   // no log *list* - the engine's output goes to Electron's stderr, not to a ring
   // buffer the UI reads back.
   logs: {
-    view: () => ipcRenderer.invoke('inferml:showDataDir'),
-    path: () => ipcRenderer.invoke('inferml:dataDir'),
+    view: () => ipcRenderer.invoke('zeroinfer:showDataDir'),
+    path: () => ipcRenderer.invoke('zeroinfer:dataDir'),
   },
 
   storage: {
@@ -148,7 +148,7 @@ contextBridge.exposeInMainWorld('inferml', {
 
     // Not an engine op, unlike its neighbours: the engine runs *inside* the venv
     // whose packages this strips, so only the main process can do it (see ipc.js).
-    clearPyRuntime: () => ipcRenderer.invoke('inferml:clearPyRuntime'),
+    clearPyRuntime: () => ipcRenderer.invoke('zeroinfer:clearPyRuntime'),
     onClearProgress: onProgress('runtime'),
   },
 
@@ -163,8 +163,8 @@ contextBridge.exposeInMainWorld('inferml', {
 });
 
 // The bootstrap page (shown while the venv is built) is a separate document with
-// its own script, and it predates window.inferml. Left as its own namespace.
-contextBridge.exposeInMainWorld('infermlDesktop', {
+// its own script, and it predates window.zeroinfer. Left as its own namespace.
+contextBridge.exposeInMainWorld('zeroinferDesktop', {
   isDesktop: true,
   boot: {
     onStatus: on('boot:status'),

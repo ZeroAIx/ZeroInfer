@@ -15,11 +15,11 @@ class EmbeddingError(Exception):
     """A bad request the caller should turn into a 400."""
 
 
-# Generic OpenAI embedding model names (and InferML placeholders) map onto a
+# Generic OpenAI embedding model names (and ZeroInfer placeholders) map onto a
 # small, fast default so drop-in clients that hard-code `text-embedding-3-small`
 # still work. Any real Hugging Face id is used verbatim.
 _GENERIC_EMBED_NAMES = {
-    "", "inferml", "default", "current",
+    "", "zeroinfer", "default", "current",
     "text-embedding-3-small", "text-embedding-3-large",
     "text-embedding-ada-002", "text-embedding-002", "text-embedding-3",
     "ada", "ada-002",

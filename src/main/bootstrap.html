@@ -1,6 +1,6 @@
 <!doctype html>
 <meta charset="utf-8" />
-<title>InferML</title>
+<title>ZeroInfer</title>
 <style>
   :root {
     --bg: #0b0d12;
@@ -83,7 +83,7 @@
 
 <div class="wrap">
   <div class="mark">
-    <svg width="44" height="44" viewBox="0 0 128 128" aria-label="InferML">
+    <svg width="44" height="44" viewBox="0 0 128 128" aria-label="ZeroInfer">
       <defs>
         <linearGradient id="logo-bg" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#1F2937"/>
@@ -111,7 +111,7 @@
 
   <!-- state: booting -->
   <section id="loading">
-    <h1>Starting InferML</h1>
+    <h1>Starting ZeroInfer</h1>
     <p id="sub">Preparing your local model runtime.</p>
     <div class="step">
       <div class="spinner"></div>
@@ -125,7 +125,7 @@
   <section id="no-python" class="card" hidden>
     <h1>Python <span id="min">3.10</span>+ is required</h1>
     <p id="np-body">
-      InferML runs models using your system's Python. Install it once, then come
+      ZeroInfer runs models using your system's Python. Install it once, then come
       back and press Re-check - no other setup is needed.
     </p>
     <div class="hint" id="np-hint" hidden></div>
@@ -139,7 +139,7 @@
   <!-- state: boot failed -->
   <section id="failed" class="card" hidden>
     <h1 class="err" id="f-title">Something went wrong</h1>
-    <p>InferML could not finish starting up.</p>
+    <p>ZeroInfer could not finish starting up.</p>
     <div class="mono-err" id="f-msg"></div>
     <div class="row">
       <button class="primary" id="f-retry">Try again</button>
@@ -149,7 +149,7 @@
 </div>
 
 <script>
-  const D = window.infermlDesktop;
+  const D = window.zeroinferDesktop;
   const $ = (id) => document.getElementById(id);
 
   const show = (which) => {

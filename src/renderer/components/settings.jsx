@@ -91,7 +91,7 @@ function Row({ title, sub, value, control, onClick }) {
 }
 
 function GeneralSection({ version, hw, pyStatus, refreshPyStatus, resetPySetup }) {
-  const openExternal = (url) => window.inferml?.app?.openExternal?.(url);
+  const openExternal = (url) => window.zeroinfer?.app?.openExternal?.(url);
   const [logsPath, setLogsPath] = useStateS('');
   const [cacheStat, setCacheStat] = useStateS({ bytes: null, files: null, paths: [] });
   const [runtimeStat, setRuntimeStat] = useStateS({ bytes: null, files: null, paths: [] });
@@ -127,8 +127,8 @@ function GeneralSection({ version, hw, pyStatus, refreshPyStatus, resetPySetup }
     };
     try {
       await Promise.all([
-        settle('hf', window.inferml?.storage?.size?.('hfCache')),
-        settle('py', window.inferml?.storage?.size?.('pyRuntime')),
+        settle('hf', window.zeroinfer?.storage?.size?.('hfCache')),
+        settle('py', window.zeroinfer?.storage?.size?.('pyRuntime')),
       ]);
     } catch {
       setSizeLoading({ hf: false, py: false });
@@ -139,7 +139,7 @@ function GeneralSection({ version, hw, pyStatus, refreshPyStatus, resetPySetup }
     let alive = true;
     (async () => {
       try {
-        const p = await window.inferml?.logs?.path?.();
+        const p = await window.zeroinfer?.logs?.path?.();
         if (alive && p) setLogsPath(p);
       } catch {}
       if (alive) refreshSizes();
@@ -150,12 +150,12 @@ function GeneralSection({ version, hw, pyStatus, refreshPyStatus, resetPySetup }
 
 
   useEffectS(() => {
-    const off = window.inferml?.hf?.onInstallsChanged?.(() => refreshSizes());
+    const off = window.zeroinfer?.hf?.onInstallsChanged?.(() => refreshSizes());
     return () => { try { off && off(); } catch {} };
   }, []);
 
   const viewLogs = async () => {
-    try { await window.inferml?.logs?.view?.(); } catch {}
+    try { await window.zeroinfer?.logs?.view?.(); } catch {}
   };
 
   const doClear = async (key) => {
@@ -173,15 +173,15 @@ function GeneralSection({ version, hw, pyStatus, refreshPyStatus, resetPySetup }
     // The removal narrates itself on its own channel. Listen only for the duration
     // of the clear, so this row doesn't light up during an unrelated install.
     const off = key === 'py'
-      ? window.inferml?.storage?.onClearProgress?.((evt) => {
+      ? window.zeroinfer?.storage?.onClearProgress?.((evt) => {
           if (evt?.kind === 'step') setClearStep(evt.text);
         })
       : null;
 
     try {
       const res = key === 'hf'
-        ? await window.inferml?.storage?.clearHfCache?.()
-        : await window.inferml?.storage?.clearPyRuntime?.();
+        ? await window.zeroinfer?.storage?.clearHfCache?.()
+        : await window.zeroinfer?.storage?.clearPyRuntime?.();
       if (!res?.ok) setError(res?.error || 'Clear failed');
       // The runtime is gone, so the remembered "install succeeded" must go with it.
       // Onboarding reads that flag, not just pyStatus, and a stale one leaves it
@@ -213,7 +213,7 @@ function GeneralSection({ version, hw, pyStatus, refreshPyStatus, resetPySetup }
       <div className="s-card">
         <Row
           title="Version"
-          value={`InferML v${version || '-'}`}
+          value={`ZeroInfer v${version || '-'}`}
           control={<UpdateCheckButton currentVersion={version}/>}
         />
         <Row title="Platform" value={`${hw?.os?.distro || hw?.os?.platform || '-'} · ${hw?.os?.arch || ''}`.trim()}/>
@@ -226,7 +226,7 @@ function GeneralSection({ version, hw, pyStatus, refreshPyStatus, resetPySetup }
           control={
             <button
               className="mc-btn ghost"
-              onClick={(e) => { e.stopPropagation(); openExternal('https://github.com/IMvision12/InferML/issues'); }}
+              onClick={(e) => { e.stopPropagation(); openExternal('https://github.com/ZeroAIx/ZeroInfer/issues'); }}
             >
               <Icon name="arrow_right" size={11}/> Open in browser
             </button>
@@ -466,20 +466,20 @@ function ApiSection() {
   const [copied, setCopied] = useStateS(null);
 
   const refresh = async () => {
-    try { setSt(await window.inferml?.api?.status()); } catch { setSt(null); }
+    try { setSt(await window.zeroinfer?.api?.status()); } catch { setSt(null); }
   };
 
   useEffectS(() => {
     refresh();
-    window.inferml?.api?.mcpCommand?.().then((r) => setMcp(r?.clients || [])).catch(() => {});
+    window.zeroinfer?.api?.mcpCommand?.().then((r) => setMcp(r?.clients || [])).catch(() => {});
   }, []);
 
   const toggle = async () => {
     setBusy(true);
     try {
       const next = st?.running
-        ? await window.inferml.api.stop()
-        : await window.inferml.api.start();
+        ? await window.zeroinfer.api.stop()
+        : await window.zeroinfer.api.start();
       setSt(next);
     } catch { /* the status row shows whatever state we end up in */ }
     setBusy(false);
@@ -526,7 +526,7 @@ function ApiSection() {
           <Row
             title="Could not start"
             sub={st.error.includes('address') || st.error.includes('10048')
-              ? 'Port 11500 is already in use - another InferML, or another app.'
+              ? 'Port 11500 is already in use - another ZeroInfer, or another app.'
               : st.error}
           />
         )}
@@ -573,7 +573,7 @@ function UpdateCheckButton({ currentVersion }) {
   const [result, setResult] = useStateS(null);
   const [progress, setProgress] = useStateS(0);   
   const [confirmOpen, setConfirmOpen] = useStateS(false);
-  const openExternal = (url) => window.inferml?.app?.openExternal?.(url);
+  const openExternal = (url) => window.zeroinfer?.app?.openExternal?.(url);
 
 
 
@@ -581,7 +581,7 @@ function UpdateCheckButton({ currentVersion }) {
 
   useEffectS(() => {
     let mounted = true;
-    const u = window.inferml?.updates;
+    const u = window.zeroinfer?.updates;
     if (!u) return;
     const offProgress = u.onProgress?.((evt) => {
       if (!mounted) return;
@@ -640,7 +640,7 @@ function UpdateCheckButton({ currentVersion }) {
     setProgress(0);
     try {
 
-      const r = await window.inferml?.updates?.check?.({ force: true });
+      const r = await window.zeroinfer?.updates?.check?.({ force: true });
       if (!r || !r.ok) {
 
         setResult(r || { error: 'unknown' });
@@ -664,7 +664,7 @@ function UpdateCheckButton({ currentVersion }) {
     setProgress(0);
     setState('downloading');
     try {
-      const r = await window.inferml?.updates?.download?.();
+      const r = await window.zeroinfer?.updates?.download?.();
       if (!r) { setState('error'); setResult({ error: 'No response' }); return; }
       if (r.alreadyDownloaded) { setProgress(100); setState('downloaded'); return; }
       if (!r.ok) { setResult({ error: r.error || 'Download failed' }); setState('error'); return; }
@@ -680,24 +680,24 @@ function UpdateCheckButton({ currentVersion }) {
 
 
 
-    window.dispatchEvent(new CustomEvent('inferml:update-installing', {
+    window.dispatchEvent(new CustomEvent('zeroinfer:update-installing', {
       detail: { version: result?.latestVersion || '' },
     }));
 
 
 
     const timeoutId = setTimeout(() => {
-      window.dispatchEvent(new CustomEvent('inferml:update-install-failed'));
+      window.dispatchEvent(new CustomEvent('zeroinfer:update-install-failed'));
       setResult((r) => ({ ...(r || {}), error: 'Install timed out. Try downloading the installer manually from the website.' }));
       setState('idle');
     }, 30000);
 
-    try { await window.inferml?.updates?.install?.(); }
+    try { await window.zeroinfer?.updates?.install?.(); }
     catch (e) {
       clearTimeout(timeoutId);
       setResult({ error: String(e?.message || e) });
       setState('error');
-      window.dispatchEvent(new CustomEvent('inferml:update-install-failed'));
+      window.dispatchEvent(new CustomEvent('zeroinfer:update-install-failed'));
     }
 
   };
@@ -730,7 +730,7 @@ function UpdateCheckButton({ currentVersion }) {
         </div>
         <ConfirmDialog
           open={confirmOpen}
-          title={`Download InferML ${result.latestVersion}?`}
+          title={`Download ZeroInfer ${result.latestVersion}?`}
           message="The update will download in the background. You'll be prompted to install and restart when it's ready."
           confirmLabel="Download"
           cancelLabel="Cancel"

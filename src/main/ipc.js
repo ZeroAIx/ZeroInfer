@@ -1,16 +1,16 @@
 /**
  * The renderer's whole view of the outside world.
  *
- * The UI calls `window.inferml.*` (see preload.js); every one of those lands
+ * The UI calls `window.zeroinfer.*` (see preload.js); every one of those lands
  * here, and this is the only place that can reach the Python engine, the disk,
  * or the network. The renderer itself is loaded from file:// with no node
  * integration, so it cannot fetch, spawn, or read anything on its own.
  *
  * Three shapes of traffic:
- *   request/response   `inferml:call`      - the common case
- *   streaming          `inferml:download`  - progress frames while it runs
- *                      `inferml:setup`
- *   broadcast          `inferml:event`     - the engine talking unprompted
+ *   request/response   `zeroinfer:call`      - the common case
+ *   streaming          `zeroinfer:download`  - progress frames while it runs
+ *                      `zeroinfer:setup`
+ *   broadcast          `zeroinfer:event`     - the engine talking unprompted
  */
 'use strict';
 
@@ -80,10 +80,10 @@ function registerIpc({ runner, getWin }) {
   };
 
   for (const name of BROADCASTS) {
-    runner.on(name, (data) => send('inferml:event', { name, data }));
+    runner.on(name, (data) => send('zeroinfer:event', { name, data }));
   }
 
-  ipcMain.handle('inferml:call', async (_e, type, payload) => {
+  ipcMain.handle('zeroinfer:call', async (_e, type, payload) => {
     if (!ALLOWED.has(type)) throw new Error(`operation not permitted: ${type}`);
     const result = await runner.call(type, payload || {});
     if (type === 'tasks.status' && result) lastStatus = result;
@@ -93,7 +93,7 @@ function registerIpc({ runner, getWin }) {
   // Synchronous by design. It only reads a cached object in this process - no
   // engine round-trip - so it costs microseconds, and it replaces the blocking
   // XHR the old web bridge used for exactly this.
-  ipcMain.on('inferml:statusSync', (e) => { e.returnValue = lastStatus; });
+  ipcMain.on('zeroinfer:statusSync', (e) => { e.returnValue = lastStatus; });
 
   // --- streaming operations --------------------------------------------------
   //
@@ -101,19 +101,19 @@ function registerIpc({ runner, getWin }) {
   // renderer subscribes once (onDownloadProgress / onSetupProgress) rather than
   // correlating per call, which is what the existing UI already expects.
 
-  ipcMain.handle('inferml:download', async (_e, modelId) => {
+  ipcMain.handle('zeroinfer:download', async (_e, modelId) => {
     try {
       return await runner.call('tasks.download', { modelId },
-        (p) => send('inferml:progress', { kind: 'download', data: p }));
+        (p) => send('zeroinfer:progress', { kind: 'download', data: p }));
     } catch (e) {
       return { ok: false, error: String((e && e.message) || e) };
     }
   });
 
-  ipcMain.handle('inferml:setup', async (_e, opts) => {
+  ipcMain.handle('zeroinfer:setup', async (_e, opts) => {
     try {
       const res = await runner.call('tasks.setup', opts || {},
-        (p) => send('inferml:progress', { kind: 'setup', data: p }));
+        (p) => send('zeroinfer:progress', { kind: 'setup', data: p }));
       // The inference stack just changed underneath us; make sure the next
       // statusSync tells the truth instead of the pre-install answer.
       try { lastStatus = await runner.call('tasks.status', {}); } catch { /* non-fatal */ }
@@ -125,11 +125,11 @@ function registerIpc({ runner, getWin }) {
 
   // --- things only the shell can do -----------------------------------------
 
-  ipcMain.handle('inferml:app.version', async () => app.getVersion());
+  ipcMain.handle('zeroinfer:app.version', async () => app.getVersion());
 
-  ipcMain.handle('inferml:dataDir', async () => app.getPath('userData'));
+  ipcMain.handle('zeroinfer:dataDir', async () => app.getPath('userData'));
 
-  ipcMain.handle('inferml:openExternal', async (_e, url) => {
+  ipcMain.handle('zeroinfer:openExternal', async (_e, url) => {
     // Only ever a real web link. A file:// or, on Windows, a .lnk/.exe path
     // handed to the shell would be an arbitrary-execution hole, and model cards
     // are full of attacker-supplied links.
@@ -138,7 +138,7 @@ function registerIpc({ runner, getWin }) {
     return { ok: true };
   });
 
-  ipcMain.handle('inferml:showDataDir', async () => {
+  ipcMain.handle('zeroinfer:showDataDir', async () => {
     const dir = app.getPath('userData');
     fs.mkdirSync(dir, { recursive: true });
     await shell.openPath(dir);
@@ -163,11 +163,11 @@ function registerIpc({ runner, getWin }) {
     return { kind, name: path.basename(file), dataUrl: `data:${mime};base64,${b64}` };
   };
 
-  ipcMain.handle('inferml:pickImage', () => pickFile('image', [
+  ipcMain.handle('zeroinfer:pickImage', () => pickFile('image', [
     { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif', 'bmp'] },
   ]));
 
-  ipcMain.handle('inferml:pickAudio', () => pickFile('audio', [
+  ipcMain.handle('zeroinfer:pickAudio', () => pickFile('audio', [
     { name: 'Audio', extensions: ['wav', 'mp3', 'flac', 'ogg', 'm4a'] },
   ]));
 
@@ -190,7 +190,7 @@ function registerIpc({ runner, getWin }) {
    */
   let clearing = false;
 
-  ipcMain.handle('inferml:clearPyRuntime', async () => {
+  ipcMain.handle('zeroinfer:clearPyRuntime', async () => {
     // Never twice at once. A second pass would tear packages out from under the
     // first one mid-uninstall and leave the environment in pieces. The UI guards
     // this too, but the guard belongs where the damage happens.
@@ -204,8 +204,8 @@ function registerIpc({ runner, getWin }) {
     // own channel, NOT the setup one. A setup frame is how the app knows an install
     // is running; borrowing that channel made the app announce it was downloading a
     // runtime at the exact moment it was deleting one.
-    const step = (text) => send('inferml:progress', { kind: 'runtime', data: { kind: 'step', text } });
-    const log = (text) => send('inferml:progress', { kind: 'runtime', data: { kind: 'log', text } });
+    const step = (text) => send('zeroinfer:progress', { kind: 'runtime', data: { kind: 'step', text } });
+    const log = (text) => send('zeroinfer:progress', { kind: 'runtime', data: { kind: 'log', text } });
 
     // Nothing may lazily respawn the engine while its own packages are moving.
     // Callers that arrive meanwhile are parked, not failed - they wait out the few
@@ -267,7 +267,7 @@ function registerIpc({ runner, getWin }) {
           // them through. The next launch repairs the venv on its own: boot()
           // rebuilds whenever isVenvReady is false.
           runner.suspend(
-            `The Python environment is damaged and could not be repaired: ${(repair && repair.message) || repair}\n\nRestart InferML to try again.`,
+            `The Python environment is damaged and could not be repaired: ${(repair && repair.message) || repair}\n\nRestart ZeroInfer to try again.`,
           );
         }
       }

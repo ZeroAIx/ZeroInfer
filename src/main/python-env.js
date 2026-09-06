@@ -1,7 +1,7 @@
 /**
  * Python interpreter discovery + the app-managed venv.
  *
- * InferML ships the Electron shell and the `python/` source tree, but NOT a
+ * ZeroInfer ships the Electron shell and the `python/` source tree, but NOT a
  * Python runtime - the user supplies one (3.10+). Everything that depends on
  * that decision is confined to this file: to switch to a bundled interpreter
  * later, only `findSystemPython()` has to change (return the bundled path) and
@@ -140,7 +140,7 @@ function venvUv(userData) {
 }
 
 /**
- * InferML's own wheel cache, and the env every uv call must run with.
+ * ZeroInfer's own wheel cache, and the env every uv call must run with.
  *
  * Left alone, uv caches into a machine-global directory (%LOCALAPPDATA%\uv\cache).
  * That is the right default for a developer tool and the wrong one for us. Our
@@ -261,7 +261,7 @@ async function ensureVenv(userData, systemPython, onProgress) {
   emit('Preparing the installer');
   await run(py, ['-m', 'pip', 'install', '--upgrade', 'pip', 'uv'], log);
 
-  emit('Installing the InferML engine');
+  emit('Installing the ZeroInfer engine');
   await run(venvUv(userData), ['pip', 'install', '--python', py, ...SERVER_DEPS], log, uvEnv(userData));
 
   return py;
@@ -297,7 +297,7 @@ async function resetToBaseEnv(userData, onProgress) {
   const uv = venvUv(userData);
   const env = uvEnv(userData);
 
-  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'inferml-reset-'));
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'zeroinfer-reset-'));
   const reqs = path.join(tmp, 'base.txt');
   const lock = path.join(tmp, 'base.lock');
 

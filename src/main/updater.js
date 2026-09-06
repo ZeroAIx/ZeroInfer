@@ -1,7 +1,7 @@
 /**
  * Auto-update against GitHub Releases.
  *
- * Replaces the old pipx self-update path (`pipx upgrade inferml` + relaunch),
+ * Replaces the old pipx self-update path (`pipx upgrade zeroinfer` + relaunch),
  * which is meaningless now that the app ships as an installer rather than a
  * PyPI package. electron-updater reads the same release assets CI publishes and
  * swaps the app in place.
@@ -84,8 +84,8 @@ function initUpdater(getWin) {
         currentVersion: current,
         latestVersion: latest,
         canAutoUpdate: true,
-        releaseUrl: `https://github.com/IMvision12/InferML/releases/tag/v${latest}`,
-        downloadPageUrl: 'https://github.com/IMvision12/InferML/releases/latest',
+        releaseUrl: `https://github.com/ZeroAIx/ZeroInfer/releases/tag/v${latest}`,
+        downloadPageUrl: 'https://github.com/ZeroAIx/ZeroInfer/releases/latest',
       };
     } catch (e) {
       return {

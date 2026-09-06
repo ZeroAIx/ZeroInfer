@@ -153,7 +153,7 @@ function ModelHub({ hw, onOpenModel, onOpenSettings, defaultInstalled = false, r
   const dlTimers = useRefMB({});
 
   const refreshInstalled = async () => {
-    try { setInstalled((await window.inferml.hf.installed()) || {}); } catch {}
+    try { setInstalled((await window.zeroinfer.hf.installed()) || {}); } catch {}
   };
 
   useEffectMB(() => { refreshInstalled(); }, []);
@@ -161,7 +161,7 @@ function ModelHub({ hw, onOpenModel, onOpenSettings, defaultInstalled = false, r
 
 
   useEffectMB(() => {
-    const off = window.inferml?.hf?.onInstallsChanged?.(() => refreshInstalled());
+    const off = window.zeroinfer?.hf?.onInstallsChanged?.(() => refreshInstalled());
     return () => { try { off && off(); } catch {} };
   }, []);
 
@@ -172,7 +172,7 @@ function ModelHub({ hw, onOpenModel, onOpenSettings, defaultInstalled = false, r
     (async () => {
       setSuggestedLoading(true);
       const lists = await Promise.allSettled(
-        SUGGEST_TASKS.map(t => window.inferml.hf.search('', t))
+        SUGGEST_TASKS.map(t => window.zeroinfer.hf.search('', t))
       );
       if (cancelled) return;
       const pool = {};
@@ -229,7 +229,7 @@ function ModelHub({ hw, onOpenModel, onOpenSettings, defaultInstalled = false, r
           const m = needSize[cursor++];
           if (suggestedSizes[m.id]) continue; 
           try {
-            const info = await window.inferml?.hf.modelInfo(m.id);
+            const info = await window.zeroinfer?.hf.modelInfo(m.id);
             if (cancelled || !info?.size) continue;
             setSuggestedSizes(prev => ({ ...prev, [m.id]: info.size }));
           } catch {  }
@@ -247,7 +247,7 @@ function ModelHub({ hw, onOpenModel, onOpenSettings, defaultInstalled = false, r
   }, [query]);
 
   useEffectMB(() => {
-    const off = window.inferml?.tasks.onDownloadProgress((evt) => {
+    const off = window.zeroinfer?.tasks.onDownloadProgress((evt) => {
       if (!evt || !evt.modelId) return;
       const { modelId, pct, done, total, final } = evt;
       setDownloads(d => {
@@ -289,11 +289,11 @@ function ModelHub({ hw, onOpenModel, onOpenSettings, defaultInstalled = false, r
       setErr(null);
       try {
         if (showInstalled) {
-          const inst = (await window.inferml.hf.installed()) || {};
+          const inst = (await window.zeroinfer.hf.installed()) || {};
           const ids = Object.keys(inst);
           const collected = [];
           for (const id of ids) {
-            const sub = await window.inferml.hf.search(id.split('/').pop(), null);
+            const sub = await window.zeroinfer.hf.search(id.split('/').pop(), null);
             if (Array.isArray(sub)) {
               const match = sub.find(m => m.id === id);
               if (match) collected.push({ ...match, installed: true });
@@ -303,7 +303,7 @@ function ModelHub({ hw, onOpenModel, onOpenSettings, defaultInstalled = false, r
           if (!cancelled) setResults(collected);
         } else {
           const sel = HUB_TASKS.find(t => t.id === tab);
-          const r = await window.inferml.hf.search(debouncedQuery.trim(), sel?.task || null);
+          const r = await window.zeroinfer.hf.search(debouncedQuery.trim(), sel?.task || null);
           if (Array.isArray(r)) {
             if (!cancelled) setResults(r);
           } else {
@@ -363,7 +363,7 @@ function ModelHub({ hw, onOpenModel, onOpenSettings, defaultInstalled = false, r
         while (!cancelled && cursor < ids.length) {
           const id = ids[cursor++];
           try {
-            const info = await window.inferml?.hf.modelInfo(id);
+            const info = await window.zeroinfer?.hf.modelInfo(id);
             if (cancelled) return;
             setSizeMap(prev => ({
               ...prev,
@@ -383,7 +383,7 @@ function ModelHub({ hw, onOpenModel, onOpenSettings, defaultInstalled = false, r
     if (downloads[m.id]) return;
     setDownloads(d => ({ ...d, [m.id]: { status: 'downloading', size: m.size } }));
     try {
-      const res = await window.inferml.tasks.download(m.id);
+      const res = await window.zeroinfer.tasks.download(m.id);
       if (!res?.ok) {
         const msg = res?.error || 'download failed';
 
@@ -392,7 +392,7 @@ function ModelHub({ hw, onOpenModel, onOpenSettings, defaultInstalled = false, r
           : d);
         return;
       }
-      await window.inferml.hf.markInstalled(m.id, { task: m.task, size: m.size, nm: m.nm, localPath: res.info?.path });
+      await window.zeroinfer.hf.markInstalled(m.id, { task: m.task, size: m.size, nm: m.nm, localPath: res.info?.path });
       await refreshInstalled();
       setDownloads(d => { const rest = { ...d }; delete rest[m.id]; return rest; });
     } catch (e) {
@@ -407,10 +407,10 @@ function ModelHub({ hw, onOpenModel, onOpenSettings, defaultInstalled = false, r
 
 
 
-    try { await window.inferml?.tasks.cancelDownload(id); } catch {}
+    try { await window.zeroinfer?.tasks.cancelDownload(id); } catch {}
   };
   const uninstall = async (id) => {
-    await window.inferml.hf.uninstall(id);
+    await window.zeroinfer.hf.uninstall(id);
     refreshInstalled();
   };
 
@@ -770,7 +770,7 @@ function ModelCard({ m, onInstall, onUninstall, onOpen, downloading, dlPct, dlDo
               <button className="mc-btn primary" onClick={onInstall}>
                 <Icon name="download" size={12}/> Download{sizeDisplay ? ` · ${sizeDisplay}` : ''}
               </button>
-              <button className="mc-btn ghost" onClick={() => window.inferml?.app.openExternal(`https://huggingface.co/${m.id || m.path}`)}>View</button>
+              <button className="mc-btn ghost" onClick={() => window.zeroinfer?.app.openExternal(`https://huggingface.co/${m.id || m.path}`)}>View</button>
             </>
           )}
         </div>
@@ -806,7 +806,7 @@ function GatedTokenPrompt({ modelId, onOpenSettings, onRetry }) {
         <span style={{flex: 1}}/>
         <a
           className="hub-link"
-          onClick={() => window.inferml?.app.openExternal(`https://huggingface.co/${modelId}`)}
+          onClick={() => window.zeroinfer?.app.openExternal(`https://huggingface.co/${modelId}`)}
         >
           Request access on Hugging Face
         </a>

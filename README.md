@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="assets/logo.png" alt="InferML logo" width="140" />
+  <img src="assets/logo.png" alt="ZeroInfer logo" width="140" />
 </p>
 
-# InferML
+# ZeroInfer
 
 Any Hugging Face model. Local. Multi-modal. A **desktop app** - download it and
 run models on your own machine.
@@ -17,24 +17,24 @@ One line in your terminal:
 
 ```powershell
 # Windows (PowerShell)
-irm https://inferml.vercel.app/install.ps1 | iex
+irm https://zeroinfer.vercel.app/install.ps1 | iex
 ```
 
 ```bash
 # macOS / Linux
-curl -fsSL https://inferml.vercel.app/install.sh | sh
+curl -fsSL https://zeroinfer.vercel.app/install.sh | sh
 ```
 
 The script grabs the latest build for your OS from GitHub Releases and installs
 it. Prefer to click? Download it from the
-[**Releases**](https://github.com/IMvision12/InferML/releases/latest) page:
+[**Releases**](https://github.com/ZeroAIx/ZeroInfer/releases/latest) page:
 
 | Platform | File |
 | --- | --- |
-| Windows | `InferML-Setup-<version>.exe` |
-| macOS (Apple Silicon) | `InferML-<version>-arm64.dmg` |
-| macOS (Intel) | `InferML-<version>-x64.dmg` |
-| Linux | `InferML-<version>.AppImage` or `.deb` |
+| Windows | `ZeroInfer-Setup-<version>.exe` |
+| macOS (Apple Silicon) | `ZeroInfer-<version>-arm64.dmg` |
+| macOS (Intel) | `ZeroInfer-<version>-x64.dmg` |
+| Linux | `ZeroInfer-<version>.AppImage` or `.deb` |
 
 > The builds are not code-signed yet. Downloaded in a browser, Windows
 > SmartScreen will say "unknown publisher" (More info → Run anyway) and macOS
@@ -44,7 +44,7 @@ it. Prefer to click? Download it from the
 
 ### Requirements
 
-**Python 3.10 or newer**, already installed and on your PATH. InferML uses it to
+**Python 3.10 or newer**, already installed and on your PATH. ZeroInfer uses it to
 build a private environment for the model runtime - it does not touch your
 system packages, and it never installs Python for you.
 
@@ -58,7 +58,7 @@ download - nothing else breaks.
 
 ## First launch
 
-1. InferML creates its own Python environment (a few seconds, once).
+1. ZeroInfer creates its own Python environment (a few seconds, once).
 2. It asks whether to install the inference stack for **CPU** or **GPU** and
    fetches the matching PyTorch build. This is a one-time download of ~0.5-2.5 GB,
    with a progress bar.
@@ -69,18 +69,18 @@ folder, and nothing is sent anywhere.
 
 ## Lives in your tray
 
-InferML sits in the system tray (menu bar on macOS). **Closing the window doesn't
+ZeroInfer sits in the system tray (menu bar on macOS). **Closing the window doesn't
 quit it** - the engine and every model you've loaded stay resident, so reopening
 is instant instead of paying the load again. Getting the window back is one click.
 
-The tray menu has: **Open InferML**, **Launch at login**, and **Quit InferML**.
+The tray menu has: **Open ZeroInfer**, **Launch at login**, and **Quit ZeroInfer**.
 Quit is the only thing that actually stops the engine and frees the memory your
 models are holding.
 
 ## The app itself never uses a port
 
 The window is a local file and the Python engine is a child process Electron
-talks to over stdin/stdout. Nothing is served, so **the InferML interface can
+talks to over stdin/stdout. Nothing is served, so **the ZeroInfer interface can
 never be opened in a browser** - there is no URL that returns it.
 
 That stays true even with the API below switched on. The API serves `/v1` and
@@ -88,7 +88,7 @@ nothing else; a browser pointed at it gets a 404.
 
 ## OpenAI-compatible API
 
-Off by default. Turn it on in **Settings → API & MCP**, and InferML serves an
+Off by default. Turn it on in **Settings → API & MCP**, and ZeroInfer serves an
 OpenAI-compatible API on `http://localhost:11500/v1` (any api key). It routes to
 whichever LLM is loaded, or lazy-loads the one you name.
 
@@ -122,21 +122,21 @@ Copy the exact command from **Settings → API & MCP**, or:
 
 ```powershell
 # Windows
-claude mcp add inferml -- "$env:APPDATA\InferML\venv\Scripts\python.exe" "$env:APPDATA\InferML\inferml-mcp.py"
+claude mcp add zeroinfer -- "$env:APPDATA\ZeroInfer\venv\Scripts\python.exe" "$env:APPDATA\ZeroInfer\zeroinfer-mcp.py"
 ```
 
 ```bash
 # macOS
-claude mcp add inferml -- \
-  "$HOME/Library/Application Support/InferML/venv/bin/python" \
-  "$HOME/Library/Application Support/InferML/inferml-mcp.py"
+claude mcp add zeroinfer -- \
+  "$HOME/Library/Application Support/ZeroInfer/venv/bin/python" \
+  "$HOME/Library/Application Support/ZeroInfer/zeroinfer-mcp.py"
 ```
 
 The app rewrites that launcher on every boot, so it survives updates.
 
 Tools: `detect_objects`, `segment_image`, `generate_image`, `transcribe_audio`,
 `text_to_speech`, `generate_text`, `embed_text`, plus `search_models`,
-`download_model`, `list_models` and `inferml_status`. Keep InferML running while
+`download_model`, `list_models` and `zeroinfer_status`. Keep ZeroInfer running while
 you use them.
 
 ## Updating
@@ -148,25 +148,25 @@ UI fix never costs you a 2 GB re-download.
 ## Uninstall
 
 Remove the app the normal way for your OS (Add/Remove Programs on Windows, drag
-to Trash on macOS, `apt remove inferml` for the .deb, or delete the AppImage).
+to Trash on macOS, `apt remove zeroinfer` for the .deb, or delete the AppImage).
 
 That leaves your settings and downloaded weights on disk. To wipe those too:
 
 ```bash
 # macOS
-rm -rf ~/Library/Application\ Support/InferML   # env, settings, chats, HF token
+rm -rf ~/Library/Application\ Support/ZeroInfer   # env, settings, chats, HF token
 rm -rf ~/.cache/huggingface                     # downloaded models (GBs)
 ```
 
 ```bash
 # Linux
-rm -rf ~/.config/InferML
+rm -rf ~/.config/ZeroInfer
 rm -rf ~/.cache/huggingface
 ```
 
 ```powershell
 # Windows (PowerShell)
-Remove-Item -Recurse -Force "$env:APPDATA\InferML"
+Remove-Item -Recurse -Force "$env:APPDATA\ZeroInfer"
 Remove-Item -Recurse -Force "$env:USERPROFILE\.cache\huggingface"
 ```
 
@@ -183,7 +183,7 @@ The shell finds a Python, builds a venv in its data folder, and spawns
 JSON over stdin/stdout. Nothing binds a port.
 
 The React UI in `src/renderer/` is loaded from disk with `loadFile()`, runs with
-no node integration, and reaches the engine only through `window.inferml`, which
+no node integration, and reaches the engine only through `window.zeroinfer`, which
 `src/main/preload.js` defines over IPC. If a capability isn't on that object, the
 UI doesn't have it.
 
@@ -199,7 +199,7 @@ Useful pieces:
 | `src/main/main.js` | boot sequence + window/tray lifecycle |
 | `src/main/python-runner.js` | spawns the engine, JSON over stdin/stdout |
 | `src/main/ipc.js` | every operation the UI is allowed to invoke |
-| `src/main/preload.js` | defines `window.inferml` - the renderer's only door out |
+| `src/main/preload.js` | defines `window.zeroinfer` - the renderer's only door out |
 | `src/main/python-env.js` | Python discovery + the app-managed venv |
 | `src/main/tray.js` | tray icon, close-to-tray, launch at login |
 | `python/runner.py` | the stdio protocol + dispatch table |

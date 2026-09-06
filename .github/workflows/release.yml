@@ -7,7 +7,7 @@ name: release
 # fan out to a windows/macos/linux matrix that uploads installers into it, then
 # publish the draft. Pushing again without a version bump does nothing.
 #
-# This replaces the old PyPI trusted-publish workflow - InferML now ships as an
+# This replaces the old PyPI trusted-publish workflow - ZeroInfer now ships as an
 # app you download, not a package you pip install.
 
 on:

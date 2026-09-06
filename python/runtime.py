@@ -1,6 +1,6 @@
 """Process-wide engine state, shared by both front-ends.
 
-InferML has two ways in, and they run on different concurrency models:
+ZeroInfer has two ways in, and they run on different concurrency models:
 
   - the **app**: `runner.py` reads JSON off stdin and dispatches onto a thread
     pool. Synchronous, `threading`.

@@ -1,5 +1,5 @@
 /**
- * Electron main process - the InferML desktop app.
+ * Electron main process - the ZeroInfer desktop app.
  *
  * Boot sequence (the bootstrap window narrates each step):
  *   1. find a system Python >= 3.10          -> python-env.findSystemPython
@@ -9,7 +9,7 @@
  *
  * Steps 1-2 only do real work on first launch. There is no server and no port:
  * the engine is a child process we talk to in JSON over its stdio (see
- * python/runner.py), and the UI is a local file. Nothing InferML runs is
+ * python/runner.py), and the UI is a local file. Nothing ZeroInfer runs is
  * reachable from the network, or from a browser.
  *
  * Lifecycle: the window is a *view onto* a running engine, not the engine
@@ -109,7 +109,7 @@ function createWindow() {
     minHeight: 640,
     show: false,
     backgroundColor: '#0b0d12',
-    title: 'InferML',
+    title: 'ZeroInfer',
     // Needed for the title bar and taskbar in dev: electron-builder's `win.icon`
     // only stamps the packaged .exe, so `npm start` otherwise shows Electron's
     // own atom. `...(x && {icon: x})` because a null icon key is worse than none.
@@ -200,7 +200,7 @@ async function boot() {
 
   try {
     if (!isVenvReady(app.getPath('userData'))) {
-      send('boot:status', { step: 'Setting up InferML (first launch only)' });
+      send('boot:status', { step: 'Setting up ZeroInfer (first launch only)' });
       await ensureVenv(app.getPath('userData'), py, (evt) => {
         if (evt.step) send('boot:status', { step: evt.step });
         if (evt.log) send('boot:log', { line: evt.log });
@@ -220,7 +220,7 @@ async function boot() {
     await runner.start();
     await ipc.primeStatus();
     // Point the MCP launcher at this install. Cheap, and doing it every boot is
-    // what keeps `claude mcp add inferml -- ...` working across app updates.
+    // what keeps `claude mcp add zeroinfer -- ...` working across app updates.
     writeMcpLauncher(app.getPath('userData'), pythonDir());
     booted = true;
     if (tray && tray.refresh) tray.refresh();
@@ -253,7 +253,7 @@ if (!app.requestSingleInstanceLock()) {
     //         bundle's .icns, which only a packaged build has - so `npm start`
     //         shows Electron in the Dock unless we set it explicitly.
     //  linux  the window `icon` we pass in createWindow() is all it needs.
-    if (process.platform === 'win32') app.setAppUserModelId('app.inferml');
+    if (process.platform === 'win32') app.setAppUserModelId('app.zeroinfer');
     if (process.platform === 'darwin' && app.dock && !app.isPackaged) {
       const img = appIcon();
       if (img) app.dock.setIcon(img);
@@ -328,12 +328,12 @@ ipcMain.handle('boot:open-python-download', async () => {
 //
 // The Codex surfaces do not need one each: the Codex CLI, the desktop app and
 // the IDE extension all share ~/.codex/config.toml, so `codex mcp add` registers
-// InferML with all three at once.
-ipcMain.handle('inferml:mcpCommand', async () => {
+// ZeroInfer with all three at once.
+ipcMain.handle('zeroinfer:mcpCommand', async () => {
   const userData = app.getPath('userData');
   const py = venvPython(userData);
   const launcher = launcherPath(userData);
-  const add = (cli) => `${cli} mcp add inferml -- "${py}" "${launcher}"`;
+  const add = (cli) => `${cli} mcp add zeroinfer -- "${py}" "${launcher}"`;
 
   // appData maps to the right place on every platform: %APPDATA% on Windows,
   // ~/Library/Application Support on macOS, ~/.config on Linux.
@@ -341,7 +341,7 @@ ipcMain.handle('inferml:mcpCommand', async () => {
   // JSON.stringify does the backslash escaping the file needs, so the snippet is
   // paste-ready rather than something the user has to fix up by hand.
   const desktopSnippet = JSON.stringify(
-    { mcpServers: { inferml: { command: py, args: [launcher] } } }, null, 2);
+    { mcpServers: { zeroinfer: { command: py, args: [launcher] } } }, null, 2);
 
   return {
     clients: [

@@ -1,4 +1,4 @@
-# InferML website
+# ZeroInfer website
 
 Static landing page. No framework, no build step - just open `index.html` in a browser.
 
@@ -12,7 +12,7 @@ website/
 ├── install.sh         # macOS/Linux installer  (curl -fsSL .../install.sh | sh)
 ├── install.ps1        # Windows installer      (irm .../install.ps1 | iex)
 ├── assets/
-│   └── favicon.svg    # InferML constellation mark
+│   └── favicon.svg    # ZeroInfer constellation mark
 └── README.md          # this file
 ```
 
@@ -27,7 +27,7 @@ terminal. Both end up installing the exact same desktop build.
 Every download link in the markup points at the releases page:
 
 ```
-https://github.com/IMvision12/InferML/releases/latest
+https://github.com/ZeroAIx/ZeroInfer/releases/latest
 ```
 
 On load, `script.js` calls the GitHub releases API and rewrites those links to
@@ -45,9 +45,9 @@ build that won't run; the release page shows both.
 
 ```
 # Windows
-irm https://inferml.vercel.app/install.ps1 | iex
+irm https://zeroinfer.vercel.app/install.ps1 | iex
 # macOS / Linux
-curl -fsSL https://inferml.vercel.app/install.sh | sh
+curl -fsSL https://zeroinfer.vercel.app/install.sh | sh
 ```
 
 Both resolve the latest release from the GitHub API, pick the asset matching the
@@ -56,7 +56,7 @@ host OS/arch, and install it:
 | Platform | What the script does |
 | --- | --- |
 | Windows | downloads the `.exe` and runs it silently (`/S`, per-user, no admin), then launches the app |
-| macOS | downloads the `.zip`, unpacks `InferML.app` into `/Applications` |
+| macOS | downloads the `.zip`, unpacks `ZeroInfer.app` into `/Applications` |
 | Linux | downloads the `.AppImage` into `~/.local/bin` and adds a `.desktop` entry |
 
 Each script checks for **Python 3.10+** and warns if it's missing, but installs
@@ -66,7 +66,7 @@ anyway - the app has a proper first-run screen for that case.
 > carries no `com.apple.quarantine` attribute, so Gatekeeper doesn't block the
 > unsigned app the way it does when you download the `.dmg` in a browser.
 
-> The scripts and the page hard-code `https://inferml.vercel.app`. If you deploy
+> The scripts and the page hard-code `https://zeroinfer.vercel.app`. If you deploy
 > to a different domain, find-and-replace that host in `index.html` (hero command
 > + the `#install` one-liners) and `script.js` (the Windows override). Serving
 > over **HTTPS** is required for `| iex` / `| sh`.

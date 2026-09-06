@@ -44,7 +44,7 @@ function create() {
     minHeight: 360,
     show: false,
     backgroundColor: '#0b0d12',
-    title: 'InferML - Output',
+    title: 'ZeroInfer - Output',
     ...(appIcon() ? { icon: appIcon() } : {}),
     autoHideMenuBar: true,
     webPreferences: {

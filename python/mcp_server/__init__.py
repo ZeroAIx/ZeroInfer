@@ -1,1 +1,1 @@
-"""MCP server package - exposes a running InferML server to LLM clients."""
+"""MCP server package - exposes a running ZeroInfer server to LLM clients."""

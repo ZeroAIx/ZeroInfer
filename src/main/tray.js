@@ -36,7 +36,7 @@ function createTray({ onOpen, onQuit, isRunning }) {
   if (tray) return tray;
 
   tray = new Tray(trayImage());
-  tray.setToolTip('InferML');
+  tray.setToolTip('ZeroInfer');
 
   const rebuild = () => {
     const running = isRunning();
@@ -44,18 +44,18 @@ function createTray({ onOpen, onQuit, isRunning }) {
 
     tray.setContextMenu(Menu.buildFromTemplate([
       {
-        label: running ? 'InferML - engine running' : 'InferML - starting...',
+        label: running ? 'ZeroInfer - engine running' : 'ZeroInfer - starting...',
         enabled: false,
       },
       { type: 'separator' },
-      { label: 'Open InferML', click: onOpen },
+      { label: 'Open ZeroInfer', click: onOpen },
       { type: 'separator' },
       {
         label: 'Launch at login',
         type: 'checkbox',
         checked: openAtLogin,
         click: (item) => {
-          // `--hidden` is read back in main.js: an auto-started InferML warms up
+          // `--hidden` is read back in main.js: an auto-started ZeroInfer warms up
           // in the tray without stealing focus with a window nobody asked for.
           app.setLoginItemSettings({
             openAtLogin: item.checked,
@@ -66,7 +66,7 @@ function createTray({ onOpen, onQuit, isRunning }) {
         },
       },
       { type: 'separator' },
-      { label: 'Quit InferML', click: onQuit },
+      { label: 'Quit ZeroInfer', click: onQuit },
     ]));
   };
 

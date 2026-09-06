@@ -1,6 +1,6 @@
 """The inference engine, driven over stdin/stdout.
 
-InferML is an Electron app with a Python engine. This is the seam between them:
+ZeroInfer is an Electron app with a Python engine. This is the seam between them:
 Electron spawns `python -u runner.py` as a child process and talks to it in
 newline-delimited JSON. There is no HTTP server, no port, and nothing listening
 on the network - the only way to reach the engine is to be its parent process.
@@ -463,7 +463,7 @@ def _op_api_status(rid, p):
 def _autostart_api() -> None:
     """Bring the API up at boot if the user left it on.
 
-    Deliberately not fatal: a port already taken (a second InferML, or anything
+    Deliberately not fatal: a port already taken (a second ZeroInfer, or anything
     else on 11500) must not stop the app from starting. The failure is reported
     through api.status instead, where Settings can show it.
     """

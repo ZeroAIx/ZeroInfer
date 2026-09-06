@@ -2,8 +2,8 @@
 
 Replaces Electron's `app.getPath('userData')` + `services/storage.js`. Uses
 platformdirs so chats/settings/installs land in the OS-conventional per-user
-location (e.g. %APPDATA%/InferML on Windows, ~/.local/share/InferML on Linux,
-~/Library/Application Support/InferML on macOS).
+location (e.g. %APPDATA%/ZeroInfer on Windows, ~/.local/share/ZeroInfer on Linux,
+~/Library/Application Support/ZeroInfer on macOS).
 """
 from __future__ import annotations
 
@@ -18,13 +18,13 @@ except Exception:  # pragma: no cover - platformdirs is a declared dependency
     user_data_dir = None
 
 def data_dir() -> Path:
-    override = os.environ.get("INFERML_DATA_DIR")
+    override = os.environ.get("ZEROINFER_DATA_DIR")
     if override:
         base = Path(override)
     elif user_data_dir is not None:
-        base = Path(user_data_dir("InferML", "InferML"))
+        base = Path(user_data_dir("ZeroInfer", "ZeroInfer"))
     else:
-        base = Path.home() / ".inferml"
+        base = Path.home() / ".zeroinfer"
     base.mkdir(parents=True, exist_ok=True)
     return base
 

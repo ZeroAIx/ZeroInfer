@@ -2,7 +2,7 @@
 
 Drop-in target for LangChain `ChatOpenAI`, the OpenAI SDK, LangGraph, etc.:
 point `base_url` at http://localhost:PORT/v1 with any api_key. Routes to the
-LLM currently loaded in InferML (or lazy-loads one named in `model`).
+LLM currently loaded in ZeroInfer (or lazy-loads one named in `model`).
 """
 from __future__ import annotations
 
@@ -70,7 +70,7 @@ async def list_models():
     created = _now()
     return {
         "object": "list",
-        "data": [{"id": mid, "object": "model", "created": created, "owned_by": "inferml"} for mid in ids],
+        "data": [{"id": mid, "object": "model", "created": created, "owned_by": "zeroinfer"} for mid in ids],
     }
 
 def _encode_embedding(row, enc_format: str):
@@ -221,7 +221,7 @@ async def audio_speech(payload: dict = Body(...)):
         return _media_err(e)
     wav = data_url_bytes(out["dataUrl"])
     return Response(content=wav, media_type="audio/wav",
-                    headers={"X-InferML-Model": mid})
+                    headers={"X-ZeroInfer-Model": mid})
 
 @router.post("/image/detection")
 async def image_detection(payload: dict = Body(...)):
@@ -284,7 +284,7 @@ async def image_generation(payload: dict = Body(...)):
     """Text-to-image via the diffusion adapters (SD, SDXL, FLUX, …). Returns
     b64_json PNGs regardless of `response_format` (there's no URL hosting).
     No default model - diffusion weights are GB-scale, so downloads must be
-    explicit: pass an HF id or install a text-to-image model in InferML."""
+    explicit: pass an HF id or install a text-to-image model in ZeroInfer."""
     prompt = str(payload.get("prompt") or "").strip()
     if not prompt:
         return JSONResponse(status_code=400, content=_err("`prompt` is required.", "invalid_request_error"))

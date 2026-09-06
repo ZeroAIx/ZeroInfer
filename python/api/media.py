@@ -15,11 +15,11 @@ class MediaError(Exception):
     """A bad request the route should turn into a 400."""
 
 
-# OpenAI's own model names (plus InferML placeholders) accepted as "whatever
+# OpenAI's own model names (plus ZeroInfer placeholders) accepted as "whatever
 # fits this endpoint": resolve to an installed model for the task, else the
 # endpoint's default. Any real HF id is used verbatim.
 GENERIC_NAMES = {
-    "", "inferml", "default", "current",
+    "", "zeroinfer", "default", "current",
     # audio/transcriptions
     "whisper-1", "gpt-4o-transcribe", "gpt-4o-mini-transcribe",
     # audio/speech
@@ -47,7 +47,7 @@ def resolve_media_model(requested: str | None, tasks: tuple, fallback: str | Non
         return fallback
     raise MediaError(
         f"No model available. Pass a Hugging Face id as `model`, or install a "
-        f"{tasks[0]} model in InferML first."
+        f"{tasks[0]} model in ZeroInfer first."
     )
 
 

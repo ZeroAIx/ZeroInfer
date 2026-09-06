@@ -1,10 +1,10 @@
 #!/bin/sh
-# InferML installer for macOS and Linux.
+# ZeroInfer installer for macOS and Linux.
 #
-#   curl -fsSL https://inferml.vercel.app/install.sh | sh
+#   curl -fsSL https://zeroinfer.vercel.app/install.sh | sh
 #
 # Resolves the latest desktop build from GitHub Releases and installs it:
-#   macOS  -> unpacks InferML.app into /Applications
+#   macOS  -> unpacks ZeroInfer.app into /Applications
 #   Linux  -> drops the AppImage in ~/.local/bin + adds a desktop entry
 #
 # On macOS this is actually the smoothest path: a file fetched with curl carries
@@ -13,7 +13,7 @@
 
 set -eu
 
-REPO="IMvision12/InferML"
+REPO="ZeroAIx/ZeroInfer"
 API="https://api.github.com/repos/${REPO}/releases/latest"
 
 info() { printf '\033[36m>>\033[0m %s\n' "$1"; }
@@ -23,7 +23,7 @@ die()  { printf '\033[31mxx\033[0m %s\n' "$1" >&2; exit 1; }
 command -v curl >/dev/null 2>&1 || die "curl is required."
 
 # --- Python check -------------------------------------------------------------
-# InferML runs models with your own Python. The app explains this on first launch
+# ZeroInfer runs models with your own Python. The app explains this on first launch
 # if it's missing, so don't hard-fail here.
 python_ok() {
   for py in python3 python; do
@@ -33,7 +33,7 @@ python_ok() {
   return 1
 }
 if ! python_ok; then
-  warn "Python 3.10+ was not found. InferML needs it to run models."
+  warn "Python 3.10+ was not found. ZeroInfer needs it to run models."
   case "$(uname -s)" in
     Darwin) warn "Install it with:  brew install python@3.12" ;;
     *)      warn "Install it with:  sudo apt install python3 python3-venv" ;;
@@ -60,12 +60,12 @@ case "$OS" in
     esac
     ;;
   *)
-    die "Unsupported OS: $OS. Windows users: irm https://inferml.vercel.app/install.ps1 | iex"
+    die "Unsupported OS: $OS. Windows users: irm https://zeroinfer.vercel.app/install.ps1 | iex"
     ;;
 esac
 
 info "Looking up the latest release"
-JSON="$(curl -fsSL -H 'User-Agent: inferml-installer' "$API")" \
+JSON="$(curl -fsSL -H 'User-Agent: zeroinfer-installer' "$API")" \
   || die "Could not reach GitHub."
 
 URL="$(printf '%s' "$JSON" \
@@ -92,7 +92,7 @@ if [ "$OS" = "Darwin" ]; then
   APP="$(find "$TMP/app" -maxdepth 1 -name '*.app' | head -n 1)"
   [ -n "$APP" ] || die "No .app found inside the archive."
 
-  DEST="/Applications/InferML.app"
+  DEST="/Applications/ZeroInfer.app"
   info "Installing to $DEST"
   if [ -w /Applications ]; then
     rm -rf "$DEST"
@@ -103,12 +103,12 @@ if [ "$OS" = "Darwin" ]; then
     sudo mv "$APP" "$DEST"
   fi
 
-  info "InferML installed. Starting it now."
+  info "ZeroInfer installed. Starting it now."
   open -a "$DEST" || true
 
 else
   BIN_DIR="$HOME/.local/bin"
-  DEST="$BIN_DIR/InferML.AppImage"
+  DEST="$BIN_DIR/ZeroInfer.AppImage"
   mkdir -p "$BIN_DIR"
 
   info "Installing to $DEST"
@@ -118,20 +118,20 @@ else
   # A desktop entry so it shows up in the launcher like a normal app.
   APPS="$HOME/.local/share/applications"
   mkdir -p "$APPS"
-  cat > "$APPS/inferml.desktop" <<EOF
+  cat > "$APPS/zeroinfer.desktop" <<EOF
 [Desktop Entry]
 Type=Application
-Name=InferML
+Name=ZeroInfer
 Comment=Run any Hugging Face model locally
 Exec=$DEST
-Icon=inferml
+Icon=zeroinfer
 Categories=Development;Science;
 Terminal=false
 EOF
 
   case ":$PATH:" in
     *":$BIN_DIR:"*) ;;
-    *) warn "$BIN_DIR is not on your PATH - add it to run 'InferML.AppImage' from a shell." ;;
+    *) warn "$BIN_DIR is not on your PATH - add it to run 'ZeroInfer.AppImage' from a shell." ;;
   esac
 
   # AppImages need FUSE; without it the binary exits with a cryptic error.
@@ -141,6 +141,6 @@ EOF
     warn "  ...or run it with:  $DEST --appimage-extract-and-run"
   fi
 
-  info "InferML installed. Launch it from your applications menu, or run:"
+  info "ZeroInfer installed. Launch it from your applications menu, or run:"
   info "  $DEST"
 fi

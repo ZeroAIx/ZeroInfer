@@ -62,6 +62,6 @@ htmlcov/
 hf_home/
 torch_cache/
 
-# InferML test artifacts
+# ZeroInfer test artifacts
 python/test_outputs/
 python/_test_results.jsonl

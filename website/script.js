@@ -1,6 +1,6 @@
-// InferML landing page - interactions.
+// ZeroInfer landing page - interactions.
 //
-// InferML ships as a desktop app from GitHub Releases. This script resolves the
+// ZeroInfer ships as a desktop app from GitHub Releases. This script resolves the
 // download buttons to the right asset for the visitor's OS, wires up the
 // copy-to-clipboard blocks (still used by the API code sample), highlights the
 // visitor's platform card, and runs the ambient scroll / hero effects.
@@ -65,7 +65,7 @@
 // The links point at GitHub's stable "latest asset" path, which 302s straight to
 // the newest build:
 //
-//   /releases/latest/download/InferML-Setup.exe
+//   /releases/latest/download/ZeroInfer-Setup.exe
 //
 // There is deliberately NO GitHub API call here. The API is rate-limited (60
 // req/hr per IP) and returns 404 until the first release exists - either of which
@@ -73,14 +73,14 @@
 // names carry no version (see electron-builder.yml), these URLs can be hard-coded
 // and the platform cards work even with JavaScript disabled.
 (function () {
-  const REPO = 'IMvision12/InferML';
+  const REPO = 'ZeroAIx/ZeroInfer';
   const DL = (file) => `https://github.com/${REPO}/releases/latest/download/${file}`;
 
   const ASSET = {
-    win: 'InferML-Setup.exe',
-    macArm: 'InferML-arm64.dmg',
-    macIntel: 'InferML-x64.dmg',
-    linux: 'InferML.AppImage',
+    win: 'ZeroInfer-Setup.exe',
+    macArm: 'ZeroInfer-arm64.dmg',
+    macIntel: 'ZeroInfer-x64.dmg',
+    linux: 'ZeroInfer.AppImage',
   };
 
   const ua = (navigator.userAgent || '').toLowerCase();
@@ -148,7 +148,7 @@
   }
 
   // ── Compatibility bridge for releases built before the filenames dropped their
-  // version (v2.0.0 shipped `InferML-Setup-2.0.0.exe`, which the stable URL above
+  // version (v2.0.0 shipped `ZeroInfer-Setup-2.0.0.exe`, which the stable URL above
   // cannot name). Ask the API what the newest release actually contains and match
   // by pattern, so the button works regardless of which naming scheme is live.
   //
@@ -177,7 +177,7 @@
 
   // The hero command ships as the curl/sh line; Windows visitors get PowerShell.
   if (os === 'windows') {
-    const ps = 'irm https://inferml.vercel.app/install.ps1 | iex';
+    const ps = 'irm https://zeroinfer.vercel.app/install.ps1 | iex';
     const cmd = document.getElementById('hero-cmd');
     const text = document.getElementById('hero-cmd-text');
     const prompt = document.getElementById('hero-cmd-prompt');

@@ -1,6 +1,6 @@
-# InferML installer for Windows.
+# ZeroInfer installer for Windows.
 #
-#   irm https://inferml.vercel.app/install.ps1 | iex
+#   irm https://zeroinfer.vercel.app/install.ps1 | iex
 #
 # Fetches the latest desktop installer from GitHub Releases and runs it silently
 # (per-user - no admin rights needed), then launches the app. This is the same
@@ -9,8 +9,8 @@
 
 $ErrorActionPreference = 'Stop'
 
-$Repo = 'IMvision12/InferML'
-$AppName = 'InferML'
+$Repo = 'ZeroAIx/ZeroInfer'
+$AppName = 'ZeroInfer'
 
 function Info($msg) { Write-Host ">> $msg" -ForegroundColor Cyan }
 function Warn($msg) { Write-Host "!! $msg" -ForegroundColor Yellow }
@@ -19,7 +19,7 @@ function Die($msg)  { Write-Host "xx $msg" -ForegroundColor Red; exit 1 }
 Info "Installing $AppName"
 
 # --- Python check -------------------------------------------------------------
-# InferML runs models with your own Python. The app shows a friendly screen if
+# ZeroInfer runs models with your own Python. The app shows a friendly screen if
 # it's missing, so this is a warning and not a hard stop.
 $pythonOk = $false
 foreach ($cand in @(@('py', @('-3')), @('python', @()), @('python3', @()))) {
@@ -32,7 +32,7 @@ foreach ($cand in @(@('py', @('-3')), @('python', @()), @('python3', @()))) {
     } catch { }
 }
 if (-not $pythonOk) {
-    Warn "Python 3.10+ was not found. InferML needs it to run models."
+    Warn "Python 3.10+ was not found. ZeroInfer needs it to run models."
     Warn "Get it from https://www.python.org/downloads/ (tick 'Add python.exe to PATH')."
     Warn "Installing anyway - the app will walk you through it on first launch."
 }
@@ -41,7 +41,7 @@ if (-not $pythonOk) {
 Info "Looking up the latest release"
 try {
     $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$Repo/releases/latest" `
-                                 -Headers @{ 'User-Agent' = 'inferml-installer' }
+                                 -Headers @{ 'User-Agent' = 'zeroinfer-installer' }
 } catch {
     Die "Could not reach GitHub: $($_.Exception.Message)"
 }
@@ -54,7 +54,7 @@ $dest = Join-Path $env:TEMP $asset.name
 Info "Downloading $($asset.name) ($([math]::Round($asset.size / 1MB, 1)) MB)"
 try {
     $wc = New-Object System.Net.WebClient
-    $wc.Headers.Add('User-Agent', 'inferml-installer')
+    $wc.Headers.Add('User-Agent', 'zeroinfer-installer')
     $wc.DownloadFile($asset.browser_download_url, $dest)
 } catch {
     Die "Download failed: $($_.Exception.Message)"

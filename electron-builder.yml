@@ -1,8 +1,8 @@
 # electron-builder: produce the installers published to GitHub Releases.
 #
-#   Windows  InferML-Setup-<v>.exe          (NSIS, x64)
-#   macOS    InferML-<v>-{arm64,x64}.dmg    (+ .zip, required by electron-updater)
-#   Linux    InferML-<v>.AppImage, .deb     (x64)
+#   Windows  ZeroInfer-Setup-<v>.exe          (NSIS, x64)
+#   macOS    ZeroInfer-<v>-{arm64,x64}.dmg    (+ .zip, required by electron-updater)
+#   Linux    ZeroInfer-<v>.AppImage, .deb     (x64)
 #
 # What ships inside: the Electron shell, the compiled renderer, and the `python/`
 # source tree (the engine + runner.py, which Electron drives over stdio). What
@@ -10,8 +10,8 @@
 # the user's Python, builds a venv under userData, and the onboarding screen
 # installs the inference stack into it on first run.
 
-appId: app.inferml
-productName: InferML
+appId: app.zeroinfer
+productName: ZeroInfer
 copyright: Copyright © 2026 Gitesh Chawda
 
 directories:
@@ -64,7 +64,7 @@ win:
 #
 # GitHub exposes every release asset at a stable, guessable URL:
 #
-#   https://github.com/IMvision12/InferML/releases/latest/download/<filename>
+#   https://github.com/ZeroAIx/ZeroInfer/releases/latest/download/<filename>
 #
 # ...which 302s straight to the newest build. That only works if the filename is
 # predictable, so the version is dropped from it. The pay-off is that the website
@@ -76,8 +76,8 @@ nsis:
   oneClick: false                     # let the user choose the install dir
   allowToChangeInstallationDirectory: true
   perMachine: false                   # per-user install needs no admin rights
-  artifactName: ${productName}-Setup.${ext}          # InferML-Setup.exe
-  shortcutName: InferML
+  artifactName: ${productName}-Setup.${ext}          # ZeroInfer-Setup.exe
+  shortcutName: ZeroInfer
   createDesktopShortcut: true
 
 mac:
@@ -89,10 +89,10 @@ mac:
   icon: assets/logo.png
   category: public.app-category.developer-tools
   identity: null            # ad-hoc / unsigned until certs exist
-  artifactName: ${productName}-${arch}.${ext}        # InferML-arm64.zip
+  artifactName: ${productName}-${arch}.${ext}        # ZeroInfer-arm64.zip
 
 dmg:
-  artifactName: ${productName}-${arch}.${ext}        # InferML-arm64.dmg
+  artifactName: ${productName}-${arch}.${ext}        # ZeroInfer-arm64.dmg
 
 linux:
   target:
@@ -103,9 +103,9 @@ linux:
   icon: assets/logo.png
   category: Development
   synopsis: Run any Hugging Face model locally
-  artifactName: ${productName}.${ext}                # InferML.AppImage
+  artifactName: ${productName}.${ext}                # ZeroInfer.AppImage
 
 publish:
   provider: github
-  owner: IMvision12
-  repo: InferML
+  owner: ZeroAIx
+  repo: ZeroInfer

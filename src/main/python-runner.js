@@ -128,11 +128,11 @@ class PythonRunner {
           // appdata.py would resolve its own platformdirs location, which is a
           // *different* folder - and chats, settings and the HF token would
           // quietly split across two of them.
-          INFERML_DATA_DIR: this.dataDir,
+          ZEROINFER_DATA_DIR: this.dataDir,
           // package.json is the single source of truth for the version, and the
           // Python side has no way to read it. It needs one because /api/health
-          // reports it and the MCP server's `inferml_status` tool surfaces it.
-          INFERML_VERSION: this.version,
+          // reports it and the MCP server's `zeroinfer_status` tool surfaces it.
+          ZEROINFER_VERSION: this.version,
           // The engine installs torch with uv (runner.py's setup op). Point it at
           // the app's own wheel cache, not uv's machine-global one - otherwise the
           // multi-GB wheels land somewhere we can neither measure nor delete, and

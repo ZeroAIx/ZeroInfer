@@ -1,4 +1,4 @@
-"""The local HTTP API - the one thing InferML deliberately exposes.
+"""The local HTTP API - the one thing ZeroInfer deliberately exposes.
 
 This is an *optional* listener bolted onto the side of the engine. The desktop
 app does not use it and never talks to it: the window is a local file driven over
@@ -51,15 +51,15 @@ DEFAULT_PORT = 11500
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="InferML API", docs_url=None, redoc_url=None)
+    app = FastAPI(title="ZeroInfer API", docs_url=None, redoc_url=None)
 
     app.include_router(v1_router)
 
     @app.get("/api/health")
     async def health():
         # The version is Electron's (package.json), handed down at spawn - the
-        # MCP server's `inferml_status` tool reads it from here.
-        return {"ok": True, "name": "inferml", "version": os.environ.get("INFERML_VERSION")}
+        # MCP server's `zeroinfer_status` tool reads it from here.
+        return {"ok": True, "name": "zeroinfer", "version": os.environ.get("ZEROINFER_VERSION")}
 
     @app.get("/api/status")
     async def status():

@@ -1,6 +1,6 @@
 {
-  "name": "inferml",
-  "productName": "InferML",
+  "name": "zeroinfer",
+  "productName": "ZeroInfer",
   "version": "2.3.0",
   "description": "Any HuggingFace model. Local. Multi-modal. A desktop app for running models on-device.",
   "private": true,
@@ -10,10 +10,10 @@
     "email": "gitesh.ch.0912@gmail.com"
   },
   "license": "MIT",
-  "homepage": "https://github.com/IMvision12/InferML",
+  "homepage": "https://github.com/ZeroAIx/ZeroInfer",
   "repository": {
     "type": "git",
-    "url": "https://github.com/IMvision12/InferML.git"
+    "url": "https://github.com/ZeroAIx/ZeroInfer.git"
   },
   "scripts": {
     "gen:archs": "python python/_generate_supported_architectures.py",

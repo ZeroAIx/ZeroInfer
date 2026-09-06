@@ -1,6 +1,6 @@
-"""Async HTTP client for a running InferML server.
+"""Async HTTP client for a running ZeroInfer server.
 
-The MCP server is a *client* of `inferml`, not a second copy of the engine.
+The MCP server is a *client* of `zeroinfer`, not a second copy of the engine.
 Inference is serialized behind one lock in the server process and torch is not
 thread-safe against itself; embedding the engine here would double-load torch,
 compete for the same GPU memory, and leave the UI and MCP with separate model
@@ -8,7 +8,7 @@ caches. Talking HTTP means both share whatever model is already warm.
 
 Endpoint errors arrive in two shapes - OpenAI's `{"error": {"message": ...}}`
 on /v1/*, and `{"ok": false, "error": ...}` on /api/* - and both become an
-`InferMLError` carrying the server's own (already actionable) message.
+`ZeroInferError` carrying the server's own (already actionable) message.
 """
 from __future__ import annotations
 
@@ -25,11 +25,11 @@ INFERENCE_TIMEOUT = 1800.0
 PROBE_TIMEOUT = 5.0
 
 
-class InferMLError(RuntimeError):
+class ZeroInferError(RuntimeError):
     """A request the server rejected, or a server we couldn't reach."""
 
 
-class InferMLClient:
+class ZeroInferClient:
     def __init__(self, base_url: str = DEFAULT_URL, timeout: float = INFERENCE_TIMEOUT):
         self.base_url = base_url.rstrip("/")
         self.timeout = timeout
@@ -38,33 +38,33 @@ class InferMLClient:
         return httpx.AsyncClient(base_url=self.base_url,
                                  timeout=timeout or self.timeout)
 
-    def _unreachable(self, e: Exception) -> InferMLError:
+    def _unreachable(self, e: Exception) -> ZeroInferError:
         # Almost always one thing: the API is off. It is opt-in by design - it is
-        # the only surface InferML exposes - so "nothing is listening" is the
+        # the only surface ZeroInfer exposes - so "nothing is listening" is the
         # normal state, not a fault. Say precisely how to change it. (This used to
-        # advise running `inferml --no-browser`, a command from the pipx web app
+        # advise running `zeroinfer --no-browser`, a command from the pipx web app
         # that no longer exists, which left the one recoverable failure MCP has
         # with instructions nobody could follow.)
-        return InferMLError(
-            f"Can't reach InferML at {self.base_url} ({type(e).__name__}).\n\n"
+        return ZeroInferError(
+            f"Can't reach ZeroInfer at {self.base_url} ({type(e).__name__}).\n\n"
             "The local API is probably switched off - it is opt-in. Open the "
-            "InferML app and turn it on under Settings -> API & MCP, then retry. "
+            "ZeroInfer app and turn it on under Settings -> API & MCP, then retry. "
             "If the app is not running, start it first.\n\n"
             "(If your API listens elsewhere, point this server at it with --url, "
-            "or the INFERML_URL environment variable.)"
+            "or the ZEROINFER_URL environment variable.)"
         )
 
     @staticmethod
     def _raise_for_body(body: Any) -> Any:
-        """Turn InferML's two error envelopes into exceptions."""
+        """Turn ZeroInfer's two error envelopes into exceptions."""
         if isinstance(body, dict):
             err = body.get("error")
             if isinstance(err, dict) and err.get("message"):
-                raise InferMLError(str(err["message"]))
+                raise ZeroInferError(str(err["message"]))
             if err and body.get("ok") is False:
-                raise InferMLError(str(err))
+                raise ZeroInferError(str(err))
             if err and "ok" not in body:
-                raise InferMLError(str(err))
+                raise ZeroInferError(str(err))
         return body
 
     async def get(self, path: str, *, timeout: float | None = None) -> Any:
@@ -85,7 +85,7 @@ class InferMLClient:
         ctype = r.headers.get("content-type", "")
         if not ctype.startswith("application/json"):
             if r.status_code >= 400:
-                raise InferMLError(r.text[:500])
+                raise ZeroInferError(r.text[:500])
             return r.content
         return self._raise_for_body(r.json())
 
@@ -99,7 +99,7 @@ class InferMLClient:
         ctype = r.headers.get("content-type", "")
         if not ctype.startswith("application/json"):
             if r.status_code >= 400:
-                raise InferMLError(r.text[:500])
+                raise ZeroInferError(r.text[:500])
             return r.text
         return self._raise_for_body(r.json())
 
@@ -109,7 +109,7 @@ class InferMLClient:
             async with self._client() as c:
                 async with c.stream("POST", path, json=body) as r:
                     if r.status_code >= 400:
-                        raise InferMLError(f"{path} failed with HTTP {r.status_code}")
+                        raise ZeroInferError(f"{path} failed with HTTP {r.status_code}")
                     async for line in r.aiter_lines():
                         if line.startswith("data:"):
                             try:
@@ -136,9 +136,9 @@ class InferMLClient:
             if evt.get("type") == "result":
                 result = evt
         if not result:
-            raise InferMLError(f"Download of {model_id!r} ended without a result.")
+            raise ZeroInferError(f"Download of {model_id!r} ended without a result.")
         if not result.get("ok"):
             if result.get("cancelled"):
-                raise InferMLError(f"Download of {model_id!r} was cancelled.")
-            raise InferMLError(result.get("error") or f"Download of {model_id!r} failed.")
+                raise ZeroInferError(f"Download of {model_id!r} was cancelled.")
+            raise ZeroInferError(result.get("error") or f"Download of {model_id!r} failed.")
         return result.get("info") or {}

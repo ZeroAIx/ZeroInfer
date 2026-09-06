@@ -508,7 +508,7 @@ function TaskWorkspace({ sessionId, modelId, modelMeta, onSaved }) {
     if (!running || stopping) return;
     setStopping(true);
     stoppedByUserRef.current = true;
-    try { await window.inferml?.tasks?.stop?.(); } catch {}
+    try { await window.zeroinfer?.tasks?.stop?.(); } catch {}
   };
   const [error, setError] = useStateTW(null);
   const [paramValues, setParamValues] = useStateTW({});
@@ -544,12 +544,12 @@ function TaskWorkspace({ sessionId, modelId, modelMeta, onSaved }) {
     let cancelled = false;
     (async () => {
       if (!sessionId) return;
-      const s = await window.inferml.chats.get(sessionId);
+      const s = await window.zeroinfer.chats.get(sessionId);
       if (cancelled || !s) return;
 
       let task = s.task;
       if (!task && s.modelId) {
-        const installed = await window.inferml?.hf.installed().catch(() => null);
+        const installed = await window.zeroinfer?.hf.installed().catch(() => null);
         task = installed?.[s.modelId]?.task || modelMeta?.task || '';
       }
 
@@ -558,7 +558,7 @@ function TaskWorkspace({ sessionId, modelId, modelMeta, onSaved }) {
         : r);
       const next = { ...s, runs, task, running: false };
       const changed = task !== s.task || runs.some((r, i) => r !== (s.runs || [])[i]);
-      if (changed) window.inferml.chats.save(next).catch(() => {});
+      if (changed) window.zeroinfer.chats.save(next).catch(() => {});
       if (!cancelled) setSession(next);
     })();
     return () => { cancelled = true; };
@@ -571,14 +571,14 @@ function TaskWorkspace({ sessionId, modelId, modelMeta, onSaved }) {
   if (!session) return <div className="tw"><div className="tw-body"><div className="chat-empty">Loading…</div></div></div>;
 
   const pickImage = async () => {
-    const att = await window.inferml.dialog.openImage();
+    const att = await window.zeroinfer.dialog.openImage();
     if (att) {
       setFileInput(att);
       setSamPoints([]); 
     }
   };
   const pickAudio = async () => {
-    const att = await window.inferml.dialog.openAudio();
+    const att = await window.zeroinfer.dialog.openAudio();
     if (att) setFileInput(att);
   };
 
@@ -643,7 +643,7 @@ function TaskWorkspace({ sessionId, modelId, modelMeta, onSaved }) {
       running: true,
     };
     setSession(nextSession);
-    try { await window.inferml.chats.save(nextSession); } catch {}
+    try { await window.zeroinfer.chats.save(nextSession); } catch {}
     onSaved && onSaved(nextSession);
     setTextInput('');
     setFileInput(null);
@@ -656,7 +656,7 @@ function TaskWorkspace({ sessionId, modelId, modelMeta, onSaved }) {
       if (v === '' || v === undefined || v === null) continue;
       paramsToSend[p.key] = v;
     }
-    const res = await window.inferml.tasks.run({ task: resolvedTask, modelId, input, params: paramsToSend }).catch(e => ({ ok: false, error: String(e?.message || e) }));
+    const res = await window.zeroinfer.tasks.run({ task: resolvedTask, modelId, input, params: paramsToSend }).catch(e => ({ ok: false, error: String(e?.message || e) }));
 
     const wasCancelled = stoppedByUserRef.current;
     stoppedByUserRef.current = false;
@@ -671,7 +671,7 @@ function TaskWorkspace({ sessionId, modelId, modelMeta, onSaved }) {
       }),
     };
     setSession(done);
-    try { await window.inferml.chats.save(done); } catch {}
+    try { await window.zeroinfer.chats.save(done); } catch {}
     onSaved && onSaved(done);
     setRunning(false);
     setStopping(false);
@@ -691,7 +691,7 @@ function TaskWorkspace({ sessionId, modelId, modelMeta, onSaved }) {
         {modelId && (
           <button
             className="tb-btn"
-            onClick={() => window.inferml?.app.openExternal(`https://huggingface.co/${modelId}`)}
+            onClick={() => window.zeroinfer?.app.openExternal(`https://huggingface.co/${modelId}`)}
             title={`Open ${modelId} on Hugging Face`}
           >
             <Icon name="arrow_right" size={12}/> View on HF
@@ -1211,7 +1211,7 @@ function RunCard({ run, meta, modelId }) {
               <button
                 type="button"
                 className="tb-btn tw-error-btn"
-                onClick={() => window.inferml?.logs?.view?.()}
+                onClick={() => window.zeroinfer?.logs?.view?.()}
                 title="Open the log file in your editor"
               >
                 <Icon name="file" size={11}/> View logs

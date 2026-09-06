@@ -4,10 +4,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>InferML - run any Hugging Face model locally, with an OpenAI-compatible API</title>
+  <title>ZeroInfer - run any Hugging Face model locally, with an OpenAI-compatible API</title>
   <meta name="description"
     content="A desktop app for running any Hugging Face model on your own machine. Download it for Windows, macOS or Linux. Optional OpenAI-compatible API and an MCP server for Claude. Detection, segmentation, VLMs, ASR, TTS, diffusion. All local, no cloud, no upload." />
-  <meta property="og:title" content="InferML. Run any Hugging Face model, locally - with an OpenAI-compatible API." />
+  <meta property="og:title" content="ZeroInfer. Run any Hugging Face model, locally - with an OpenAI-compatible API." />
   <meta property="og:description"
     content="Download the app. Browse. Run. All local, behind a native desktop UI - plus an optional OpenAI-compatible API and MCP tools for Claude. 200+ model families supported." />
   <meta property="og:type" content="website" />
@@ -49,7 +49,7 @@
             <circle cx="40" cy="96" r="5" />
           </g>
         </svg>
-        <span>InferML</span>
+        <span>ZeroInfer</span>
       </a>
       <nav class="nav-links">
         <a href="#models">Models</a>
@@ -57,7 +57,7 @@
         <a href="#api">API &amp; MCP</a>
         <a href="#install">Download</a>
       </nav>
-      <a href="https://github.com/IMvision12/InferML" target="_blank" rel="noopener" class="nav-gh" aria-label="GitHub repository" title="GitHub">
+      <a href="https://github.com/ZeroAIx/ZeroInfer" target="_blank" rel="noopener" class="nav-gh" aria-label="GitHub repository" title="GitHub">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
           <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-.99-.02-1.94-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.76 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.9-.39.99 0 1.98.13 2.9.39 2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.43-2.69 5.41-5.25 5.69.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.66.79.55C20.21 21.39 23.5 17.07 23.5 12 23.5 5.65 18.35.5 12 .5z"/>
         </svg>
@@ -116,18 +116,18 @@
           <!-- script.js rewrites this to the visitor's exact installer. The href
                here is the no-JS fallback; it can't know the OS, so it lists them. -->
           <a class="dl-btn" id="hero-dl"
-             href="https://github.com/IMvision12/InferML/releases/latest">
+             href="https://github.com/ZeroAIx/ZeroInfer/releases/latest">
             <svg class="dl-ic" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M12 3v12"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/>
             </svg>
-            <span id="hero-dl-label">Download InferML</span>
+            <span id="hero-dl-label">Download ZeroInfer</span>
           </a>
 
           <span class="cta-or">or</span>
 
-          <div class="cmd cmd-hero" id="hero-cmd" data-copy="curl -fsSL https://inferml.vercel.app/install.sh | sh">
+          <div class="cmd cmd-hero" id="hero-cmd" data-copy="curl -fsSL https://zeroinfer.vercel.app/install.sh | sh">
             <span class="cmd-prompt" id="hero-cmd-prompt">$</span>
-            <code class="cmd-text" id="hero-cmd-text">curl -fsSL https://inferml.vercel.app/install.sh | sh</code>
+            <code class="cmd-text" id="hero-cmd-text">curl -fsSL https://zeroinfer.vercel.app/install.sh | sh</code>
             <button class="cmd-copy" type="button" aria-label="Copy install command">
               <svg class="cmd-copy-ic" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="9" y="9" width="12" height="12" rx="2"/>
@@ -138,7 +138,7 @@
           </div>
         </div>
         <p class="cta-sub">
-          Free and open source · <a href="https://github.com/IMvision12/InferML/releases/latest">all platforms</a> · needs Python 3.10+
+          Free and open source · <a href="https://github.com/ZeroAIx/ZeroInfer/releases/latest">all platforms</a> · needs Python 3.10+
         </p>
         <!-- The unsigned-build warning lives in detail near the download section, but the
              hero is where people actually click - so the heads-up has to be here, before
@@ -184,7 +184,7 @@
             </g>
           </svg>
           <span class="chrome-url">
-            <span class="chrome-url-host">InferML</span>
+            <span class="chrome-url-host">ZeroInfer</span>
           </span>
           <div class="chrome-spacer"></div>
           <span class="chrome-pill chrome-pill-installed">
@@ -513,7 +513,7 @@ resp = client.chat.completions.<span class="tok-fn">create</span>(
         <div class="section-head">
           <h2>Claude, with your models.</h2>
           <p>Register the MCP server once - the app copies the exact command for your install - and Claude can run
-            anything InferML has installed. Eleven tools.</p>
+            anything ZeroInfer has installed. Eleven tools.</p>
         </div>
         <div class="mcp-tools">
           <div class="mcp-tool"><span>&#9635;</span><code>detect_objects</code></div>
@@ -526,7 +526,7 @@ resp = client.chat.completions.<span class="tok-fn">create</span>(
           <div class="mcp-tool"><span>&#9906;</span><code>search_models</code></div>
           <div class="mcp-tool"><span>&#8623;</span><code>download_model</code></div>
           <div class="mcp-tool"><span>&#9776;</span><code>list_models</code></div>
-          <div class="mcp-tool"><span>&#9673;</span><code>inferml_status</code></div>
+          <div class="mcp-tool"><span>&#9673;</span><code>zeroinfer_status</code></div>
         </div>
       </div>
 
@@ -596,7 +596,7 @@ resp = client.chat.completions.<span class="tok-fn">create</span>(
     <section id="models" class="models">
       <div class="section-head">
         <h2>Everything in the Hub, ready to run.</h2>
-        <p>200+ model families, each one verified against our architecture whitelist. If it shows up in InferML, it
+        <p>200+ model families, each one verified against our architecture whitelist. If it shows up in ZeroInfer, it
           loads. No broken downloads, no missing packages, no guesswork.</p>
       </div>
       <div class="model-families">
@@ -654,7 +654,7 @@ resp = client.chat.completions.<span class="tok-fn">create</span>(
           <b>Python 3.10+</b>, which we don't bundle;
           <a href="https://www.python.org/downloads/" target="_blank" rel="noopener">grab it here</a> if you're missing it.</p>
       </div>
-      <!-- These cards say what InferML runs on; they are deliberately NOT links. Clicking
+      <!-- These cards say what ZeroInfer runs on; they are deliberately NOT links. Clicking
            one used to fetch that platform's installer, which meant a Windows visitor who
            clicked the macOS card downloaded a .dmg they could not open. Downloading is the
            job of the hero button (this visitor's build) and the links under the cards. -->
@@ -692,7 +692,7 @@ resp = client.chat.completions.<span class="tok-fn">create</span>(
            as "this is malware" and bounce, so say it here before they meet it. -->
       <div class="first-run" id="first-run">
         <p class="first-run-lead">
-          InferML isn't code-signed yet, so your OS will question it the first time you open
+          ZeroInfer isn't code-signed yet, so your OS will question it the first time you open
           it. Nothing is wrong with the download - here is what you'll see, and how to get
           through it. (The one-line terminal install below sidesteps most of these prompts.)
         </p>
@@ -710,15 +710,15 @@ resp = client.chat.completions.<span class="tok-fn">create</span>(
               Gatekeeper refuses the app because <b>Apple can't check it for malicious software</b>.
               Open <b>System Settings → Privacy &amp; Security</b>, scroll down, and click
               <b>Open Anyway</b>. If macOS instead calls it <i>damaged</i>, clear the download flag:
-              <code>xattr -dr com.apple.quarantine /Applications/InferML.app</code>
+              <code>xattr -dr com.apple.quarantine /Applications/ZeroInfer.app</code>
             </p>
           </div>
           <div class="fr">
             <span class="fr-os">Linux</span>
             <p>
               No gatekeeper, just permissions. The AppImage needs the executable bit -
-              <code>chmod +x InferML.AppImage</code> - and then runs. The <code>.deb</code> installs
-              with <code>sudo apt install ./InferML.deb</code>.
+              <code>chmod +x ZeroInfer.AppImage</code> - and then runs. The <code>.deb</code> installs
+              with <code>sudo apt install ./ZeroInfer.deb</code>.
             </p>
           </div>
         </div>
@@ -739,9 +739,9 @@ resp = client.chat.completions.<span class="tok-fn">create</span>(
             </svg>
             <span>Windows · PowerShell</span>
           </div>
-          <div class="cmd" data-copy="irm https://inferml.vercel.app/install.ps1 | iex">
+          <div class="cmd" data-copy="irm https://zeroinfer.vercel.app/install.ps1 | iex">
             <span class="cmd-prompt">&gt;</span>
-            <code class="cmd-text">irm https://inferml.vercel.app/install.ps1 | iex</code>
+            <code class="cmd-text">irm https://zeroinfer.vercel.app/install.ps1 | iex</code>
             <button class="cmd-copy" type="button" aria-label="Copy command">
               <svg class="cmd-copy-ic" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>
@@ -757,9 +757,9 @@ resp = client.chat.completions.<span class="tok-fn">create</span>(
             </svg>
             <span>macOS &amp; Linux</span>
           </div>
-          <div class="cmd" data-copy="curl -fsSL https://inferml.vercel.app/install.sh | sh">
+          <div class="cmd" data-copy="curl -fsSL https://zeroinfer.vercel.app/install.sh | sh">
             <span class="cmd-prompt">$</span>
-            <code class="cmd-text">curl -fsSL https://inferml.vercel.app/install.sh | sh</code>
+            <code class="cmd-text">curl -fsSL https://zeroinfer.vercel.app/install.sh | sh</code>
             <button class="cmd-copy" type="button" aria-label="Copy command">
               <svg class="cmd-copy-ic" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>
@@ -798,13 +798,13 @@ resp = client.chat.completions.<span class="tok-fn">create</span>(
               <circle cx="40" cy="96" r="5" />
             </g>
           </svg>
-          <span>InferML</span>
+          <span>ZeroInfer</span>
         </div>
         <div class="footer-links">
-          <a href="https://github.com/IMvision12/InferML" target="_blank" rel="noopener">GitHub</a>
-          <a href="https://pypi.org/project/inferml/" target="_blank" rel="noopener">PyPI</a>
-          <a href="https://github.com/IMvision12/InferML/issues" target="_blank" rel="noopener">Issues</a>
-          <a href="https://github.com/IMvision12/InferML/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
+          <a href="https://github.com/ZeroAIx/ZeroInfer" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://pypi.org/project/zeroinfer/" target="_blank" rel="noopener">PyPI</a>
+          <a href="https://github.com/ZeroAIx/ZeroInfer/issues" target="_blank" rel="noopener">Issues</a>
+          <a href="https://github.com/ZeroAIx/ZeroInfer/blob/main/LICENSE" target="_blank" rel="noopener">License</a>
         </div>
         <div class="footer-sub">
           MIT licensed. Built on FastAPI, transformers, diffusers, PyTorch.
