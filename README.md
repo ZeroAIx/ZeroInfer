@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="assets/logo.png" alt="ZeroInfer logo" width="140" />
-</p>
-
 # ZeroInfer
 
 Any Hugging Face model. Local. Multi-modal. A **desktop app** - download it and
